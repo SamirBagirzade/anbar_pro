@@ -97,6 +97,27 @@ div.breadcrumbs {
   text-transform: uppercase;
 }
 
+#nav-sidebar .module h2,
+#nav-sidebar .module caption {
+  color: #7c2d12;
+  background: linear-gradient(120deg, rgba(253, 230, 204, 0.9), rgba(252, 211, 166, 0.9));
+  text-shadow: none;
+}
+
+#nav-sidebar .module a {
+  color: #7c2d12;
+  font-weight: 600;
+}
+
+#nav-sidebar .module a:hover {
+  color: #9a3412;
+}
+
+#nav-sidebar .module .addlink {
+  color: #166534;
+  font-weight: 600;
+}
+
 #content {
   padding: 28px 32px 68px;
 }
