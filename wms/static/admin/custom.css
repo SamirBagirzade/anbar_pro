@@ -107,6 +107,11 @@ div.breadcrumbs {
   text-transform: uppercase;
 }
 
+.module caption {
+  color: #0b1220;
+  font-weight: 700;
+}
+
 .form-row {
   background: #ffffff;
   padding: 14px 16px;
