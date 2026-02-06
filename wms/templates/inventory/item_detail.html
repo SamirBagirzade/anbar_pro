@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}Item Detail{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h4 class="mb-1">{{ item.name }}</h4>
+    <div class="text-muted">{{ item.category }} · {{ item.unit }}</div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <div class="card mb-3">
+      <div class="card-body">
+        <h6>{% trans "Current Stock" %}</h6>
+        <table class="table table-dense">
+      <thead><tr><th>{% trans "Warehouse" %}</th><th>{% trans "On Hand" %}</th></tr></thead>
+      <tbody>
+        {% for row in stock_per_warehouse %}
+          <tr><td>{{ row.warehouse.name }}</td><td>{{ row.on_hand }}</td></tr>
+        {% empty %}
+          <tr><td colspan="2">{% trans "No stock." %}</td></tr>
+        {% endfor %}
+      </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card mb-3">
+      <div class="card-body">
+        {% if item.photo %}
+          <img src="{{ item.photo.url }}" class="img-fluid" />
+        {% else %}
+          <div class="text-muted">{% trans "No photo" %}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card mb-3">
+  <div class="card-body">
+    <h6>{% trans "Movement History (latest 200)" %}</h6>
+    <table class="table table-striped table-dense">
+  <thead>
+    <tr><th>{% trans "Date" %}</th><th>{% trans "Type" %}</th><th>{% trans "Warehouse" %}</th><th>{% trans "Qty" %}</th><th>{% trans "Note" %}</th></tr>
+  </thead>
+  <tbody>
+    {% for mv in movements %}
+      <tr class="{% if mv.qty_delta > 0 %}table-success{% elif mv.qty_delta < 0 %}table-danger{% endif %}">
+        <td>{{ mv.created_at }}</td>
+        <td>
+          {% if mv.reference_type == "purchase" %}
+            <a href="{% url 'purchase_detail' mv.reference_id %}">{{ mv.movement_type }}</a>
+          {% elif mv.reference_type == "issue" %}
+            <a href="{% url 'issue_detail' mv.reference_id %}">{{ mv.movement_type }}</a>
+          {% else %}
+            {{ mv.movement_type }}
+          {% endif %}
+        </td>
+        <td>{{ mv.warehouse.name }}</td>
+        <td>{{ mv.qty_delta }}</td>
+        <td>{{ mv.note }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">{% trans "No movements." %}</td></tr>
+    {% endfor %}
+  </tbody>
+    </table>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <h6>{% trans "Recent Purchase Prices" %}</h6>
+    <table class="table table-striped table-dense">
+  <thead><tr><th>{% trans "Date" %}</th><th>{% trans "Vendor" %}</th><th>{% trans "Qty" %}</th><th>{% trans "Unit Price" %}</th><th>{% trans "Currency" %}</th></tr></thead>
+  <tbody>
+    {% for line in purchases %}
+      <tr>
+        <td>{{ line.purchase.invoice_date }}</td>
+        <td>{{ line.purchase.vendor.name }}</td>
+        <td>{{ line.qty }}</td>
+        <td>{{ line.unit_price }}</td>
+        <td>{{ line.purchase.currency }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">{% trans "No purchases." %}</td></tr>
+    {% endfor %}
+  </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

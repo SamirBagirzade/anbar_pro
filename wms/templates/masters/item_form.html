@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h4 class="mb-3">{{ title }}</h4>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6>{% trans "Item Details" %}</h6>
+          {{ form.as_p }}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6>{% trans "Initial Stock (Auto Purchase)" %}</h6>
+          {% if stock_form %}
+            {{ stock_form.as_p }}
+            <div class="form-text">{% trans "Uploading the invoice here is enough. No invoice number needed." %}</div>
+          {% else %}
+            <div class="text-muted">{% trans "Initial stock only required when creating a new item." %}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
+</form>
+{% endblock %}

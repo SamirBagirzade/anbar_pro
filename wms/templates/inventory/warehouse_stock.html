@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}Warehouse Stock{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h4 class="mb-1">{% trans "Warehouse Stock" %}</h4>
+    <div class="text-muted">{% trans "At-a-glance availability by warehouse" %}</div>
+  </div>
+  <div>
+    <a class="btn btn-sm btn-outline-secondary" href="?{% if selected_warehouse_id %}warehouse={{ selected_warehouse_id }}&{% endif %}q={{ q }}&category={{ category }}&low_stock={{ low_stock|yesno:'1,0' }}&export=csv">{% trans "Export CSV" %}</a>
+  </div>
+</div>
+<div class="card mb-3">
+  <div class="card-body">
+    <form class="row g-2" hx-get="." hx-target="#stock-table" hx-push-url="true">
+  <div class="col-md-3">
+    <label class="form-label">{% trans "Warehouse" %}</label>
+    <select class="form-select" name="warehouse">
+      {% for wh in warehouses %}
+        <option value="{{ wh.id }}" {% if wh.id|stringformat:"s" == selected_warehouse_id %}selected{% endif %}>{{ wh.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <label class="form-label">{% trans "Search" %}</label>
+    <input class="form-control" type="text" name="q" value="{{ q }}" placeholder="{% trans 'Item name' %}" />
+  </div>
+  <div class="col-md-2">
+    <label class="form-label">{% trans "Category" %}</label>
+    <input class="form-control" type="text" name="category" value="{{ category }}" />
+  </div>
+  <div class="col-md-2 d-flex align-items-end">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="low_stock" value="1" {% if low_stock %}checked{% endif %} />
+      <label class="form-check-label">{% trans "Low stock only" %}</label>
+    </div>
+  </div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-primary w-100" type="submit">{% trans "Filter" %}</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="stock-table">
+  {% include "inventory/_stock_table.html" %}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h4 class="mb-3">{% trans "Issue" %} #{{ issue.id }}</h4>
+<div class="card mb-3">
+  <div class="card-body">
+    <div><strong>{% trans "Warehouse" %}:</strong> {{ issue.warehouse.name }}</div>
+    <div><strong>{% trans "Outgoing Location" %}:</strong> {{ issue.outgoing_location.name }}</div>
+    <div><strong>{% trans "Issue Date" %}:</strong> {{ issue.issue_date }}</div>
+    <div><strong>{% trans "Notes" %}:</strong> {{ issue.notes }}</div>
+  </div>
+</div>
+<div class="card mb-3">
+  <div class="card-body p-0">
+    <table class="table table-dense mb-0">
+      <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Qty" %}</th></tr></thead>
+      <tbody>
+        {% for line in lines %}
+          <tr><td>{{ line.item.name }}</td><td>{{ line.qty }}</td></tr>
+        {% empty %}
+          <tr><td colspan="2">{% trans "No lines." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card">
+  <div class="card-body">
+    <h6>{% trans "Attachments" %}</h6>
+    <ul class="list-group list-group-flush">
+      {% for att in attachments %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="{{ att.file.url }}" target="_blank">{{ att.original_name }}</a>
+          <span class="text-muted">{{ att.uploaded_at }}</span>
+        </li>
+      {% empty %}
+        <li class="list-group-item text-muted">{% trans "No attachments." %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

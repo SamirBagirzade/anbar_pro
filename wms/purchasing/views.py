@@ -1,0 +1,74 @@
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
+from django.utils import timezone
+from .forms import PurchaseHeaderForm, PurchaseLineFormSet
+from .models import PurchaseAttachment
+from wms.inventory.services import post_purchase
+from .models import PurchaseHeader
+
+
+@login_required
+@permission_required("purchasing.add_purchaseheader", raise_exception=True)
+@transaction.atomic
+def purchase_create(request):
+    item_id = request.GET.get("item")
+    if request.method == "POST":
+        header_form = PurchaseHeaderForm(request.POST)
+        formset = PurchaseLineFormSet(request.POST)
+        if header_form.is_valid() and formset.is_valid():
+            purchase = header_form.save(commit=False)
+            purchase.created_by = request.user
+            if not purchase.invoice_date:
+                purchase.invoice_date = timezone.localdate()
+            purchase.save()
+            formset.instance = purchase
+            for form in formset:
+                if not form.cleaned_data:
+                    continue
+                line = form.save(commit=False)
+                line.purchase = purchase
+                line.line_total = form.cleaned_data["line_total"]
+                line.save()
+            for f in request.FILES.getlist("attachments"):
+                PurchaseAttachment.objects.create(
+                    purchase=purchase,
+                    file=f,
+                    original_name=f.name,
+                    file_type=getattr(f, "content_type", ""),
+                    uploaded_by=request.user,
+                )
+            post_purchase(purchase, request.user)
+            return redirect("warehouse_stock")
+    else:
+        from wms.masters.models import Warehouse
+        first_wh = Warehouse.objects.filter(is_active=True).order_by("name").first()
+        header_form = PurchaseHeaderForm(initial={"warehouse": first_wh} if first_wh else None)
+        if item_id:
+            formset = PurchaseLineFormSet(initial=[{"item": item_id}])
+        else:
+            formset = PurchaseLineFormSet()
+
+    return render(
+        request,
+        "purchasing/purchase_form.html",
+        {
+            "header_form": header_form,
+            "formset": formset,
+        },
+    )
+
+
+@login_required
+@permission_required("purchasing.view_purchaseheader", raise_exception=True)
+def purchase_detail(request, purchase_id: int):
+    purchase = get_object_or_404(PurchaseHeader, pk=purchase_id)
+    return render(
+        request,
+        "purchasing/purchase_detail.html",
+        {
+            "purchase": purchase,
+            "lines": purchase.lines.select_related("item"),
+            "attachments": purchase.attachments.order_by("-uploaded_at"),
+        },
+    )

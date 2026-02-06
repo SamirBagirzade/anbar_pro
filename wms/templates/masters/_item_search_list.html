@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="list-group shadow-sm">
+  {% for item in items %}
+    <button type="button" class="list-group-item list-group-item-action" onclick="selectItem('{{ item.id }}', '{{ item.name|escapejs }}', this)">
+      {{ item.name }}
+    </button>
+  {% empty %}
+    <div class="list-group-item text-muted">{% trans "No items." %}</div>
+  {% endfor %}
+</div>

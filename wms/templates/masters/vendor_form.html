@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<h4 class="mb-3">{{ title }}</h4>
+<div class="card">
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="mt-3">
+        <label class="form-label">{% trans "Attachments" %}</label>
+        <input class="form-control" type="file" name="attachments" multiple />
+      </div>
+      <button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
+    </form>
+  </div>
+</div>
+{% if attachments %}
+  <div class="card mt-3">
+    <div class="card-body">
+      <h6>{% trans "Existing Attachments" %}</h6>
+      <ul class="list-group list-group-flush">
+        {% for att in attachments %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ att.file.url }}" target="_blank">{{ att.original_name }}</a>
+            <span class="text-muted">{{ att.uploaded_at }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

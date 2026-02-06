@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: az\n"
+
+msgid "WMS"
+msgstr "Anbar İdarəetmə"
+
+msgid "Logout"
+msgstr "Çıxış"
+
+msgid "Login"
+msgstr "Giriş"
+
+msgid "You have been logged out."
+msgstr "Siz sistemdən çıxış etdiniz."
+
+msgid "Warehouse Stock"
+msgstr "Anbar Qalıqları"
+
+msgid "Masters"
+msgstr "Məlumatlar"
+
+msgid "Vendors"
+msgstr "Təchizatçılar"
+
+msgid "Warehouses"
+msgstr "Anbarlar"
+
+msgid "Outgoing Locations"
+msgstr "Çıxış Məntəqələri"
+
+msgid "Items"
+msgstr "Məhsullar"
+
+msgid "Transactions"
+msgstr "Əməliyyatlar"
+
+msgid "New Purchase"
+msgstr "Yeni Alış"
+
+msgid "New Issue"
+msgstr "Yeni Çıxış"
+
+msgid "At-a-glance availability by warehouse"
+msgstr "Anbar üzrə mövcudluğa sürətli baxış"
+
+msgid "Warehouse"
+msgstr "Anbar"
+
+msgid "Search"
+msgstr "Axtarış"
+
+msgid "Item name"
+msgstr "Məhsul adı"
+
+msgid "Category"
+msgstr "Kateqoriya"
+
+msgid "Low stock only"
+msgstr "Yalnız az qalıq"
+
+msgid "Filter"
+msgstr "Filtr"
+
+msgid "Name"
+msgstr "Ad"
+
+msgid "Unit"
+msgstr "Ölçü vahidi"
+
+msgid "On Hand"
+msgstr "Qalıq"
+
+msgid "Min"
+msgstr "Minimum"
+
+msgid "Last Purchase Vendor"
+msgstr "Son alış təchizatçısı"
+
+msgid "Last Purchase Price"
+msgstr "Son alış qiyməti"
+
+msgid "Last Purchase Date"
+msgstr "Son alış tarixi"
+
+msgid "Last Issue Date"
+msgstr "Son çıxış tarixi"
+
+msgid "Actions"
+msgstr "Əməliyyatlar"
+
+msgid "Quick Purchase"
+msgstr "Sürətli Alış"
+
+msgid "Current Stock"
+msgstr "Cari Qalıq"
+
+msgid "No stock."
+msgstr "Qalıq yoxdur."
+
+msgid "No photo"
+msgstr "Şəkil yoxdur"
+
+msgid "Movement History (latest 200)"
+msgstr "Hərəkət Tarixi (son 200)"
+
+msgid "Date"
+msgstr "Tarix"
+
+msgid "Invoice Date"
+msgstr "Hesab Tarixi"
+
+msgid "Notes"
+msgstr "Qeydlər"
+
+msgid "Type"
+msgstr "Növ"
+
+msgid "Note"
+msgstr "Qeyd"
+
+msgid "No movements."
+msgstr "Hərəkət yoxdur."
+
+msgid "Recent Purchase Prices"
+msgstr "Son Alış Qiymətləri"
+
+msgid "Recent Movements"
+msgstr "Son Hərəkətlər"
+
+msgid "All stock movements across items"
+msgstr "Bütün məhsullar üzrə stok hərəkətləri"
+
+msgid "Vendor"
+msgstr "Təchizatçı"
+
+msgid "Currency"
+msgstr "Valyuta"
+
+msgid "No purchases."
+msgstr "Alış yoxdur."
+
+msgid "No items."
+msgstr "Məhsul yoxdur."
+
+msgid "New Vendor"
+msgstr "Yeni Təchizatçı"
+
+msgid "Edit Vendor"
+msgstr "Təchizatçını Dəyiş"
+
+msgid "Save"
+msgstr "Yadda saxla"
+
+msgid "Contact"
+msgstr "Əlaqə"
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Email"
+msgstr "E-poçt"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Edit"
+msgstr "Dəyiş"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "No vendors."
+msgstr "Təchizatçı yoxdur."
+
+msgid "New Warehouse"
+msgstr "Yeni Anbar"
+
+msgid "Edit Warehouse"
+msgstr "Anbarı Dəyiş"
+
+msgid "Location"
+msgstr "Məkan"
+
+msgid "No warehouses."
+msgstr "Anbar yoxdur."
+
+msgid "New Outgoing Location"
+msgstr "Yeni Çıxış Məntəqəsi"
+
+msgid "Edit Outgoing Location"
+msgstr "Çıxış Məntəqəsini Dəyiş"
+
+msgid "No locations."
+msgstr "Məntəqə yoxdur."
+
+msgid "New Item"
+msgstr "Yeni Məhsul"
+
+msgid "Edit Item"
+msgstr "Məhsulu Dəyiş"
+
+msgid "Item Details"
+msgstr "Məhsul Məlumatları"
+
+msgid "Initial Stock (Auto Purchase)"
+msgstr "İlkin Qalıq (Avto Alış)"
+
+msgid "Uploading the invoice here is enough. No invoice number needed."
+msgstr "Hesabı burada yükləmək kifayətdir. Hesab nömrəsi tələb olunmur."
+
+msgid "Save & Auto-Purchase"
+msgstr "Yadda saxla və Avto Alış"
+
+msgid "Export CSV"
+msgstr "CSV ixrac et"
+
+msgid "Prev"
+msgstr "Əvvəlki"
+
+msgid "Next"
+msgstr "Növbəti"
+
+msgid "Initial stock only required when creating a new item."
+msgstr "İlkin qalıq yalnız yeni məhsul yaradarkən tələb olunur."
+
+msgid "Lines"
+msgstr "Sətirlər"
+
+msgid "Item"
+msgstr "Məhsul"
+
+msgid "Qty"
+msgstr "Miqdar"
+
+msgid "Unit Price"
+msgstr "Vahid Qiymət"
+
+msgid "Discount"
+msgstr "Endirim"
+
+msgid "Tax %"
+msgstr "Vergi %"
+
+msgid "Search item"
+msgstr "Məhsul axtar"
+
+msgid "Add Line"
+msgstr "Sətir əlavə et"
+
+msgid "Attachments"
+msgstr "Əlavələr"
+
+msgid "Existing Attachments"
+msgstr "Mövcud Əlavələr"
+
+msgid "Save & Post"
+msgstr "Yadda saxla və Təsdiqlə"
+
+msgid "Cancel"
+msgstr "Ləğv et"
+
+msgid "Confirm Delete"
+msgstr "Silməni təsdiqlə"
+
+msgid "Are you sure you want to delete"
+msgstr "Silmək istədiyinizə əminsiniz"
+
+msgid "Item is referenced by transactions and cannot be deleted."
+msgstr "Məhsul əməliyyatlarla əlaqəlidir və silinə bilməz."
+
+msgid "Force delete and remove all related movements/lines (dangerous)"
+msgstr "Məcburi sil və əlaqəli bütün hərəkət/sətirləri sil (təhlükəli)"
+
+msgid "Purchase"
+msgstr "Alış"
+
+msgid "Issue"
+msgstr "Çıxış"
+
+msgid "Issue Date"
+msgstr "Çıxış Tarixi"
+
+msgid "Outgoing Location"
+msgstr "Çıxış Məntəqəsi"
+
+msgid "Line Total"
+msgstr "Sətir Cəmi"
+
+msgid "No lines."
+msgstr "Sətir yoxdur."
+
+msgid "No attachments."
+msgstr "Əlavə yoxdur."
+
+msgid "All"
+msgstr "Hamısı"
+
+msgid "Date From"
+msgstr "Tarixdən"
+
+msgid "Date To"
+msgstr "Tarixədək"
