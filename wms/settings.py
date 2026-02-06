@@ -84,6 +84,7 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = [BASE_DIR / "wms" / "locale"]
+FORMAT_MODULE_PATH = ["wms.locale"]
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "wms" / "static"]
