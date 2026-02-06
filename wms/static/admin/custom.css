@@ -1,28 +1,25 @@
-@import url("https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap");
 
 :root {
   --ink: #0f172a;
-  --ink-muted: #1f2937;
-  --accent: #1d4ed8;
-  --accent-strong: #1e40af;
-  --bg: #f2f4f8;
+  --ink-muted: #334155;
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --bg: #eef2f7;
   --bg-soft: #f8fafc;
   --card: #ffffff;
   --line: #e2e8f0;
-  --nav: #ffffff;
-  --nav-active: #eff6ff;
-  --warn: #f59e0b;
-  --ok: #10b981;
+  --shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
 }
 
 html,
 body {
-  background: radial-gradient(circle at top, #f8fafc 0%, #eef2f7 60%, #e9edf5 100%);
+  background: linear-gradient(180deg, #f7f9fc 0%, #eef2f7 60%, #e7edf5 100%);
 }
 
 body {
   color: var(--ink);
-  font-family: "Crimson Pro", "Georgia", serif;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
 }
 
 a:link,
@@ -33,31 +30,21 @@ a:visited {
 #header {
   background: #ffffff;
   border-bottom: 1px solid var(--line);
-  color: var(--ink);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow);
 }
 
 #branding #site-name a {
   color: var(--ink);
   text-decoration: none;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 10px;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
-.brand-mark {
-  font-size: 22px;
-  text-transform: lowercase;
-}
-
-.brand-sub {
-  font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
+#user-tools a {
   color: var(--ink-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 div.breadcrumbs {
@@ -66,12 +53,10 @@ div.breadcrumbs {
   color: var(--ink-muted);
 }
 
-.breadcrumbs a {
-  color: var(--accent);
-}
-
 #content {
-  padding: 26px 30px 64px;
+  padding: 24px 28px 72px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .module,
@@ -81,35 +66,27 @@ div.breadcrumbs {
 .submit-row,
 .object-tools,
 .object-tools a,
-#content-related .module,
-#nav-sidebar .module {
-  border-radius: 16px;
+#content-related .module {
+  border-radius: 18px;
 }
 
 .module,
 .dashboard-module,
-#content-related .module,
-.form-row,
-#nav-sidebar .module {
+#content-related .module {
   background: var(--card);
   border: 1px solid var(--line);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--shadow);
 }
 
 .module h2,
 .module caption,
 .inline-group h2 {
-  background: linear-gradient(90deg, rgba(37, 99, 235, 0.18), rgba(99, 102, 241, 0.18));
-  color: #0b1220;
-  border-bottom: 1px solid var(--line);
-  font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.module caption {
-  color: #0b1220;
+  background: transparent;
+  color: var(--ink);
+  font-family: "Source Serif 4", "Georgia", serif;
   font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .form-row {
@@ -134,7 +111,7 @@ input[type="button"],
   border-radius: 999px;
   color: #ffffff;
   padding: 8px 18px;
-  font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   box-shadow: 0 12px 22px rgba(37, 99, 235, 0.18);
@@ -151,7 +128,6 @@ input[type="button"]:hover,
 table thead th {
   background: var(--bg-soft);
   border-bottom: 1px solid var(--line);
-  font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 11px;
@@ -162,81 +138,78 @@ table tbody tr:nth-child(odd) {
 }
 
 .aligned label {
-  font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 11px;
   color: var(--ink-muted);
 }
 
-#nav-sidebar {
-  background: transparent;
+/* Admin index cards */
+.app-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
 }
 
-#nav-sidebar .module h2,
-#nav-sidebar .module caption {
-  color: #0b1220;
-  background: #e2e8f0;
-  text-shadow: none;
+.app-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 16px 18px 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
 }
 
-#nav-sidebar .module a {
-  color: #0f172a;
-  font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
-  font-weight: 600;
-}
-
-#nav-sidebar .module a:hover {
-  color: var(--accent);
-}
-
-#nav-sidebar .module .addlink {
-  color: #166534;
+.app-card h2 {
+  margin: 0 0 8px;
+  font-family: "Source Serif 4", "Georgia", serif;
   font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-#nav-sidebar .current-model,
-#nav-sidebar .current-app {
-  background: var(--nav-active);
+.app-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-card li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg-soft);
   border-radius: 12px;
 }
 
-#user-tools a {
-  color: #0f172a;
-  font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.08em;
+.app-card .model-name {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.app-card .model-actions a {
+  color: var(--accent);
+  font-weight: 600;
   text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  margin-left: 8px;
 }
 
-.module table td,
-.module table th,
-.module table a,
-.module table td a {
-  color: #0f172a;
-}
-
-.module table td a:hover,
-.module table th a:hover {
+.app-card .model-actions a:hover {
   color: var(--accent-strong);
-}
-
-.success {
-  border-left: 4px solid var(--ok);
-}
-
-.warning {
-  border-left: 4px solid var(--warn);
 }
 
 @media (max-width: 1024px) {
   #content {
     padding: 18px;
-  }
-
-  #branding #site-name a {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
   }
 }

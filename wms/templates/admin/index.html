@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+  <div class="app-list">
+    {% if app_list %}
+      {% for app in app_list %}
+        <section class="app-card">
+          <h2>{{ app.name }}</h2>
+          <ul>
+            {% for model in app.models %}
+              <li>
+                <span class="model-name">
+                  {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                  {% else %}
+                    {{ model.name }}
+                  {% endif %}
+                </span>
+                <span class="model-actions">
+                  {% if model.add_url %}
+                    <a href="{{ model.add_url }}">{% translate "Add" %}</a>
+                  {% endif %}
+                  {% if model.admin_url %}
+                    <a href="{{ model.admin_url }}">{% translate "View" %}</a>
+                  {% endif %}
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endfor %}
+    {% else %}
+      <p>{% translate "You don’t have permission to view or edit anything." %}</p>
+    {% endif %}
+  </div>
+{% endblock %}
