@@ -39,7 +39,10 @@
             </select>
           </form>
           <span class="navbar-text text-white me-3">{{ request.user.username }}</span>
-          <a class="btn btn-sm btn-outline-light" href="{% url 'logout' %}">{% trans "Logout" %}</a>
+          <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-light">{% trans "Logout" %}</button>
+          </form>
         </div>
       </div>
     </nav>
