@@ -129,6 +129,12 @@ msgstr "Son Alış Qiymətləri"
 msgid "Recent Movements"
 msgstr "Son Hərəkətlər"
 
+msgid "Vendor Stock Detail"
+msgstr "Təchizatçı üzrə Qalıq"
+
+msgid "Estimated on-hand by vendor (FIFO allocation)"
+msgstr "Təchizatçı üzrə təxmini qalıq (FIFO paylanması)"
+
 msgid "All stock movements across items"
 msgstr "Bütün məhsullar üzrə stok hərəkətləri"
 
