@@ -1,8 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.admin.sites import NotRegistered
 from django.contrib.auth.models import User, Group
 
 admin.site.unregister(User)
+try:
+    admin.site.unregister(Group)
+except NotRegistered:
+    pass
 
 
 @admin.register(User)
