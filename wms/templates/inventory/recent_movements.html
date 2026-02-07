@@ -34,11 +34,11 @@
       </div>
       <div class="col-md-3">
         <label class="form-label">{% trans "Date From" %}</label>
-        <input class="form-control" type="date" name="date_from" value="{{ date_from }}">
+        <input class="form-control" type="text" inputmode="numeric" name="date_from" value="{{ date_from }}" placeholder="dd/mm/yyyy" pattern="\\d{2}/\\d{2}/\\d{4}">
       </div>
       <div class="col-md-3">
         <label class="form-label">{% trans "Date To" %}</label>
-        <input class="form-control" type="date" name="date_to" value="{{ date_to }}">
+        <input class="form-control" type="text" inputmode="numeric" name="date_to" value="{{ date_to }}" placeholder="dd/mm/yyyy" pattern="\\d{2}/\\d{2}/\\d{4}">
       </div>
       <div class="col-md-3 d-flex align-items-end">
         <button class="btn btn-primary w-100" type="submit">{% trans "Filter" %}</button>
