@@ -640,3 +640,95 @@ table tbody td {
   color: #991b1b;
   border-left: 4px solid #ef4444;
 }
+/* Add these rules to your existing custom.css */
+
+/* ==================== FIX SIDEBAR DARK BACKGROUND ==================== */
+
+/* Target the main navigation sidebar */
+#nav-sidebar,
+.change-list #changelist-filter {
+  background: var(--sidebar-bg) !important;
+}
+
+/* Remove dark backgrounds from sidebar sections */
+#nav-sidebar .module,
+#changelist-filter h2,
+#changelist-filter h3 {
+  background: transparent !important;
+}
+
+/* Fix the sticky dark filter input */
+#changelist-filter input[type="text"] {
+  background: #ffffff !important;
+  color: var(--ink) !important;
+  border: 2px solid var(--line) !important;
+}
+
+/* Navigation sidebar links - light background */
+#nav-sidebar a {
+  background: transparent !important;
+  color: var(--ink) !important;
+  padding: 10px 12px;
+  display: block;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+#nav-sidebar a:hover {
+  background: #ffffff !important;
+  color: var(--accent) !important;
+}
+
+#nav-sidebar .current a {
+  background: #1f2937 !important;
+  color: #ffffff !important;
+}
+
+#nav-sidebar .current a:hover {
+  background: var(--ink) !important;
+}
+
+/* Sidebar action links */
+#nav-sidebar .addlink {
+  color: var(--success) !important;
+  font-weight: 700 !important;
+}
+
+#nav-sidebar .addlink:hover {
+  color: var(--success-hover) !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+}
+
+/* Remove Django's default dark styling */
+.theme-auto #nav-sidebar,
+.theme-dark #nav-sidebar {
+  background: var(--sidebar-bg) !important;
+}
+
+/* Fix sidebar header */
+#nav-sidebar h2,
+#nav-sidebar h3 {
+  background: #ffffff !important;
+  color: var(--ink) !important;
+  padding: 14px 16px !important;
+  border-radius: 12px 12px 0 0 !important;
+  border-bottom: 2px solid var(--line) !important;
+}
+
+/* Sidebar sections */
+#nav-sidebar .module {
+  background: var(--card) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 16px !important;
+  margin-bottom: 16px !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+#nav-sidebar ul {
+  padding: 8px !important;
+  background: var(--sidebar-bg) !important;
+}
+
+#nav-sidebar li {
+  margin: 4px 0 !important;
+}
