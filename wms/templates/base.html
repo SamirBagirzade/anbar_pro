@@ -30,17 +30,7 @@
       <div class="container-fluid">
         <a class="navbar-brand" href="/">{% trans "WMS" %}</a>
         <div class="d-flex">
-          <form action="{% url 'set_language' %}" method="post" class="me-3">
-            {% csrf_token %}
-            <input name="next" type="hidden" value="{{ request.path }}">
-            <select name="language" class="form-select form-select-sm" onchange="this.form.submit()">
-              {% get_current_language as LANGUAGE_CODE %}
-              {% get_available_languages as LANGUAGES %}
-              {% for lang in LANGUAGES %}
-                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>{{ lang.1 }}</option>
-              {% endfor %}
-            </select>
-          </form>
+          {% get_current_language as LANGUAGE_CODE %}
           <span class="navbar-text text-white me-3">{{ request.user.username }}</span>
           <form action="{% url 'logout' %}" method="post" class="d-inline">
             {% csrf_token %}
