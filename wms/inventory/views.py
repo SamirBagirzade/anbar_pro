@@ -6,11 +6,23 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 import csv
+from datetime import datetime
 
 from wms.masters.models import Item, Warehouse, Vendor
 from wms.purchasing.models import PurchaseLine
 from wms.issuing.models import IssueLine
 from .models import StockBalance, StockMovement
+
+
+def _parse_date(value: str):
+    if not value:
+        return None
+    for fmt in ("%d/%m/%Y", "%d.%m.%Y", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except ValueError:
+            continue
+    return None
 
 
 @login_required
@@ -140,6 +152,8 @@ def item_detail(request, item_id: int):
     movement_type = request.GET.get("movement_type")
     date_from = request.GET.get("date_from")
     date_to = request.GET.get("date_to")
+    date_from_parsed = _parse_date(date_from)
+    date_to_parsed = _parse_date(date_to)
 
     stock_per_warehouse = StockBalance.objects.filter(item=item).select_related("warehouse")
 
@@ -148,10 +162,10 @@ def item_detail(request, item_id: int):
         movements = movements.filter(warehouse_id=warehouse_id)
     if movement_type:
         movements = movements.filter(movement_type=movement_type)
-    if date_from:
-        movements = movements.filter(created_at__date__gte=date_from)
-    if date_to:
-        movements = movements.filter(created_at__date__lte=date_to)
+    if date_from_parsed:
+        movements = movements.filter(created_at__date__gte=date_from_parsed)
+    if date_to_parsed:
+        movements = movements.filter(created_at__date__lte=date_to_parsed)
     movements = movements.order_by("-created_at")[:200]
 
     purchases = (
@@ -187,6 +201,8 @@ def recent_movements(request):
     q = request.GET.get("q", "").strip()
     date_from = request.GET.get("date_from", "")
     date_to = request.GET.get("date_to", "")
+    date_from_parsed = _parse_date(date_from)
+    date_to_parsed = _parse_date(date_to)
 
     movements = StockMovement.objects.select_related("warehouse", "item")
     if warehouse_id:
@@ -195,10 +211,10 @@ def recent_movements(request):
         movements = movements.filter(movement_type=movement_type)
     if q:
         movements = movements.filter(item__name__icontains=q)
-    if date_from:
-        movements = movements.filter(created_at__date__gte=date_from)
-    if date_to:
-        movements = movements.filter(created_at__date__lte=date_to)
+    if date_from_parsed:
+        movements = movements.filter(created_at__date__gte=date_from_parsed)
+    if date_to_parsed:
+        movements = movements.filter(created_at__date__lte=date_to_parsed)
 
     movements = movements.order_by(f"{prefix}{sort}")
     paginator = Paginator(movements, 50)
@@ -235,6 +251,8 @@ def vendor_stock_detail(request):
     vendor_id = request.GET.get("vendor", "")
     date_from = request.GET.get("date_from", "")
     date_to = request.GET.get("date_to", "")
+    date_from_parsed = _parse_date(date_from)
+    date_to_parsed = _parse_date(date_to)
 
     warehouses = Warehouse.objects.filter(is_active=True).order_by("name")
     items_qs = Item.objects.filter(is_active=True).order_by("name")
@@ -251,12 +269,12 @@ def vendor_stock_detail(request):
         issues = issues.filter(item_id=item_id)
     if vendor_id:
         purchases = purchases.filter(purchase__vendor_id=vendor_id)
-    if date_from:
-        purchases = purchases.filter(purchase__invoice_date__gte=date_from)
-        issues = issues.filter(header__issue_date__gte=date_from)
-    if date_to:
-        purchases = purchases.filter(purchase__invoice_date__lte=date_to)
-        issues = issues.filter(header__issue_date__lte=date_to)
+    if date_from_parsed:
+        purchases = purchases.filter(purchase__invoice_date__gte=date_from_parsed)
+        issues = issues.filter(header__issue_date__gte=date_from_parsed)
+    if date_to_parsed:
+        purchases = purchases.filter(purchase__invoice_date__lte=date_to_parsed)
+        issues = issues.filter(header__issue_date__lte=date_to_parsed)
 
     purchases = purchases.order_by("purchase__invoice_date", "id")
 

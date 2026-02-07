@@ -4,12 +4,14 @@ from .models import IssueHeader, IssueLine
 
 
 class IssueHeaderForm(forms.ModelForm):
+    issue_date = forms.DateField(
+        input_formats=["%d/%m/%Y", "%d.%m.%Y", "%Y-%m-%d"],
+        widget=forms.DateInput(attrs={"type": "text", "placeholder": "dd/mm/yyyy", "inputmode": "numeric"}, format="%d/%m/%Y"),
+    )
+
     class Meta:
         model = IssueHeader
         fields = ["warehouse", "outgoing_location", "issue_date", "notes"]
-        widgets = {
-            "issue_date": forms.DateInput(attrs={"type": "date"}),
-        }
 
     def __init__(self, *args, **kwargs):
         from django.utils import timezone
