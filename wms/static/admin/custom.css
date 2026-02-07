@@ -2,14 +2,17 @@
 
 :root {
   --ink: #0f172a;
-  --ink-muted: #334155;
+  --ink-muted: #64748b;
   --accent: #2563eb;
   --accent-strong: #1d4ed8;
+  --success: #059669;
+  --success-hover: #047857;
   --bg: #eef2f7;
   --bg-soft: #f8fafc;
   --card: #ffffff;
   --line: #e2e8f0;
   --shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 html,
@@ -115,6 +118,8 @@ input[type="button"],
   text-transform: uppercase;
   letter-spacing: 0.12em;
   box-shadow: 0 12px 22px rgba(37, 99, 235, 0.18);
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
 .submit-row input:hover,
@@ -123,6 +128,7 @@ input[type="submit"]:hover,
 input[type="button"]:hover,
 .object-tools a:hover {
   background: var(--accent-strong);
+  transform: translateY(-1px);
 }
 
 table thead th {
@@ -142,6 +148,7 @@ table tbody tr:nth-child(odd) {
   letter-spacing: 0.08em;
   font-size: 11px;
   color: var(--ink-muted);
+  font-weight: 600;
 }
 
 /* Admin index cards */
@@ -156,60 +163,159 @@ table tbody tr:nth-child(odd) {
   border: 1px solid var(--line);
   border-radius: 20px;
   box-shadow: var(--shadow);
-  padding: 16px 18px 8px;
+  padding: 20px 22px 14px;
   display: flex;
   flex-direction: column;
   min-height: 180px;
+  transition: all 0.2s ease;
+}
+
+.app-card:hover {
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+  transform: translateY(-2px);
 }
 
 .app-card h2 {
-  margin: 0 0 8px;
+  margin: 0 0 16px;
   font-family: "Source Serif 4", "Georgia", serif;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
+  color: var(--ink);
 }
 
 .app-card ul {
   list-style: none;
   padding: 0;
-  margin: 8px 0 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .app-card li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 12px;
+  padding: 12px 14px;
   background: var(--bg-soft);
   border-radius: 12px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.app-card li:hover {
+  background: #ffffff;
+  border-color: var(--line);
+  box-shadow: var(--shadow-sm);
 }
 
 .app-card .model-name {
   color: var(--ink);
   font-weight: 600;
+  font-size: 14px;
+}
+
+.app-card .model-actions {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .app-card .model-actions a {
   color: var(--accent);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   font-size: 11px;
-  letter-spacing: 0.08em;
-  margin-left: 8px;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .app-card .model-actions a:hover {
   color: var(--accent-strong);
+  background: rgba(37, 99, 235, 0.08);
+}
+
+/* Sidebar improvements */
+#content-related {
+  background: transparent;
+}
+
+#content-related .module {
+  margin-bottom: 18px;
+}
+
+#content-related h2 {
+  font-size: 13px;
+  padding: 14px 16px;
+  margin: 0;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+  border-radius: 18px 18px 0 0;
+}
+
+#content-related ul {
+  padding: 8px;
+  margin: 0;
+}
+
+#content-related li {
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+#content-related li:hover {
+  background: var(--bg-soft);
+}
+
+#content-related a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#content-related a:hover {
+  color: var(--accent);
+}
+
+/* Add links styling */
+.addlink,
+a.addlink {
+  color: var(--success) !important;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.addlink:hover,
+a.addlink:hover {
+  color: var(--success-hover) !important;
+}
+
+.addlink::before {
+  content: "+ ";
+  font-weight: 700;
 }
 
 @media (max-width: 1024px) {
   #content {
     padding: 18px;
+  }
+  
+  .app-list {
+    grid-template-columns: 1fr;
   }
 }
