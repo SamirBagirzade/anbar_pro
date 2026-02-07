@@ -31,8 +31,8 @@
           {{ item.last_purchase_vendor }}
         </td>
         <td>{{ item.last_purchase_unit_price }}</td>
-        <td>{{ item.last_purchase_date }}</td>
-        <td>{{ item.last_issue_date }}</td>
+        <td>{{ item.last_purchase_date|date:"d.m.Y" }}</td>
+        <td>{{ item.last_issue_date|date:"d.m.Y" }}</td>
         <td>
           <a class="btn btn-sm btn-outline-primary" href="{% url 'purchase_create' %}?item={{ item.id }}">{% trans "Quick Purchase" %}</a>
         </td>

@@ -77,7 +77,7 @@
   <tbody>
     {% for line in purchases %}
       <tr>
-        <td>{{ line.purchase.invoice_date }}</td>
+        <td>{{ line.purchase.invoice_date|date:"d.m.Y" }}</td>
         <td>{{ line.purchase.vendor.name }}</td>
         <td>{{ line.qty }}</td>
         <td>{{ line.unit_price }}</td>
