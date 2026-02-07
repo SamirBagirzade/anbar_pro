@@ -205,7 +205,7 @@ def item_create(request):
                 invoice_no="",
                 invoice_date=timezone.localdate(),
                 currency=stock["currency"],
-                notes="Auto purchase from item creation",
+                notes=_("Auto purchase from item creation"),
                 created_by=request.user,
             )
             qty = quantize_qty(stock["qty"])
@@ -260,7 +260,7 @@ def item_delete(request, item_id: int):
             item.delete()
         except ProtectedError:
             if not force:
-                messages.error(request, "Item is referenced by transactions and cannot be deleted.")
+                messages.error(request, _("Item is referenced by transactions and cannot be deleted."))
             else:
                 from wms.inventory.models import StockMovement, StockBalance, TransferLine, AdjustmentLine
                 from wms.issuing.models import IssueLine

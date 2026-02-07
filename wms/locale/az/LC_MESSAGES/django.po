@@ -30,3 +30,354 @@ msgstr "Son alış tarixi"
 
 msgid "Last Issue Date"
 msgstr "Son çıxış tarixi"
+
+msgid "Actions"
+msgstr "Əməliyyatlar"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Add"
+msgstr "Əlavə et"
+
+msgid "Add Line"
+msgstr "Sətir əlavə et"
+
+msgid "Address"
+msgstr "Ünvan"
+
+msgid "Adjustment"
+msgstr "Düzəliş"
+
+msgid "All"
+msgstr "Hamısı"
+
+msgid "All stock movements across items"
+msgstr "Bütün məhsullar üzrə stok hərəkətləri"
+
+msgid "Are you sure you want to delete"
+msgstr "Silmək istədiyinizə əminsiniz?"
+
+msgid "At-a-glance availability by warehouse"
+msgstr "Anbar üzrə qısa mövcudluq"
+
+msgid "Attachments"
+msgstr "Əlavələr"
+
+msgid "Auto purchase from item creation"
+msgstr "Məhsul yaradılarkən avtomatik alış"
+
+msgid "Can override negative stock"
+msgstr "Mənfi stokun üstələnməsinə icazə ver"
+
+msgid "Cancel"
+msgstr "İmtina"
+
+msgid "Category"
+msgstr "Kateqoriya"
+
+msgid "Client"
+msgstr "Müştəri"
+
+msgid "Confirm Delete"
+msgstr "Silməni təsdiqlə"
+
+msgid "Contact"
+msgstr "Əlaqə"
+
+msgid "Contact Person"
+msgstr "Əlaqə şəxsi"
+
+msgid "Currency"
+msgstr "Valyuta"
+
+msgid "Current Stock"
+msgstr "Cari ehtiyat"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Department"
+msgstr "Şöbə"
+
+msgid "Discount"
+msgstr "Endirim"
+
+msgid "Edit"
+msgstr "Düzəliş et"
+
+msgid "Edit Item"
+msgstr "Məhsulu düzəliş et"
+
+msgid "Edit Outgoing Location"
+msgstr "Çıxış yerini düzəliş et"
+
+msgid "Edit Vendor"
+msgstr "Təchizatçını düzəliş et"
+
+msgid "Edit Warehouse"
+msgstr "Anbarı düzəliş et"
+
+msgid "Email"
+msgstr "E-poçt"
+
+msgid "Estimated on-hand by vendor (FIFO allocation)"
+msgstr "Təchizatçı üzrə təxmini qalıq (FIFO)"
+
+msgid "Existing Attachments"
+msgstr "Mövcud əlavələr"
+
+msgid "Export CSV"
+msgstr "CSV ixrac et"
+
+msgid "File"
+msgstr "Fayl"
+
+msgid "Filter"
+msgstr "Filtr"
+
+msgid "Force delete and remove all related movements/lines (dangerous)"
+msgstr "Məcburi sil və bağlı hərəkət/sətirləri sil (təhlükəli)"
+
+msgid "Forgotten your password or username?"
+msgstr "Şifrəni və ya istifadəçi adını unutmusunuz?"
+
+msgid "In Purchase"
+msgstr "Alış girişi"
+
+msgid "Initial Stock (Auto Purchase)"
+msgstr "Başlanğıc stok (avtomatik alış)"
+
+msgid "Initial stock only required when creating a new item."
+msgstr "Başlanğıc stok yalnız yeni məhsul yaradılarkən tələb olunur."
+
+msgid "Issue"
+msgstr "Çıxış"
+
+msgid "Item"
+msgstr "Məhsul"
+
+msgid "Item Details"
+msgstr "Məhsul məlumatları"
+
+msgid "Item is referenced by transactions and cannot be deleted."
+msgstr "Məhsul əməliyyatlarda istifadə olunur və silinə bilməz."
+
+msgid "Item name"
+msgstr "Məhsul adı"
+
+msgid "Items"
+msgstr "Məhsullar"
+
+msgid "Last Purchase Price"
+msgstr "Son alış qiyməti"
+
+msgid "Last Purchase Vendor"
+msgstr "Son alış təchizatçısı"
+
+msgid "Line Total"
+msgstr "Sətir məbləği"
+
+msgid "Lines"
+msgstr "Sətirlər"
+
+msgid "Location"
+msgstr "Yer"
+
+msgid "Log in"
+msgstr "Daxil ol"
+
+msgid "Login"
+msgstr "Giriş"
+
+msgid "Logout"
+msgstr "Çıxış"
+
+msgid "Low stock only"
+msgstr "Yalnız az stok"
+
+msgid "Masters"
+msgstr "Məlumatlar"
+
+msgid "Min"
+msgstr "Min"
+
+msgid "Minimum Stock"
+msgstr "Minimum stok"
+
+msgid "Movement History (latest 200)"
+msgstr "Hərəkət tarixçəsi (son 200)"
+
+msgid "Name"
+msgstr "Ad"
+
+msgid "New Issue"
+msgstr "Yeni çıxış"
+
+msgid "New Item"
+msgstr "Yeni məhsul"
+
+msgid "New Outgoing Location"
+msgstr "Yeni çıxış yeri"
+
+msgid "New Purchase"
+msgstr "Yeni alış"
+
+msgid "New Vendor"
+msgstr "Yeni təchizatçı"
+
+msgid "New Warehouse"
+msgstr "Yeni anbar"
+
+msgid "Next"
+msgstr "Növbəti"
+
+msgid "No attachments."
+msgstr "Əlavə yoxdur."
+
+msgid "No items."
+msgstr "Məhsul yoxdur."
+
+msgid "No lines."
+msgstr "Sətir yoxdur."
+
+msgid "No locations."
+msgstr "Yer yoxdur."
+
+msgid "No movements."
+msgstr "Hərəkət yoxdur."
+
+msgid "No photo"
+msgstr "Şəkil yoxdur."
+
+msgid "No purchases."
+msgstr "Alış yoxdur."
+
+msgid "No stock."
+msgstr "Stok yoxdur."
+
+msgid "No vendors."
+msgstr "Təchizatçı yoxdur."
+
+msgid "No warehouses."
+msgstr "Anbar yoxdur."
+
+msgid "Note"
+msgstr "Qeyd"
+
+msgid "Notes"
+msgstr "Qeydlər"
+
+msgid "On Hand"
+msgstr "Mövcud"
+
+msgid "Out Issue"
+msgstr "Çıxış"
+
+msgid "Outgoing Location"
+msgstr "Çıxış yeri"
+
+msgid "Outgoing Locations"
+msgstr "Çıxış yerləri"
+
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Photo"
+msgstr "Şəkil"
+
+msgid "Prev"
+msgstr "Əvvəlki"
+
+msgid "Project"
+msgstr "Layihə"
+
+msgid "Purchase"
+msgstr "Alış"
+
+msgid "Qty"
+msgstr "Miqdar"
+
+msgid "Quick Purchase"
+msgstr "Sürətli alış"
+
+msgid "Recent Movements"
+msgstr "Son hərəkətlər"
+
+msgid "Recent Purchase Prices"
+msgstr "Son alış qiymətləri"
+
+msgid "Save"
+msgstr "Yadda saxla"
+
+msgid "Save & Post"
+msgstr "Yadda saxla və təsdiqlə"
+
+msgid "Search"
+msgstr "Axtarış"
+
+msgid "Search item"
+msgstr "Məhsul axtar"
+
+msgid "Tax %"
+msgstr "Vergi %"
+
+msgid "Tax ID"
+msgstr "VÖEN"
+
+msgid "Tax Rate"
+msgstr "Vergi dərəcəsi"
+
+msgid "Transactions"
+msgstr "Əməliyyatlar"
+
+msgid "Transfer In"
+msgstr "Transfer giriş"
+
+msgid "Transfer Out"
+msgstr "Transfer çıxış"
+
+msgid "Type"
+msgstr "Növ"
+
+msgid "Unit"
+msgstr "Ölçü vahidi"
+
+msgid "Unit Price"
+msgstr "Vahid qiymət"
+
+msgid "Uploading the invoice here is enough. No invoice number needed."
+msgstr "Qaiməni buraya yükləmək kifayətdir. Qaimə nömrəsi lazım deyil."
+
+msgid "Vendor"
+msgstr "Təchizatçı"
+
+msgid "Vendor Stock Detail"
+msgstr "Təchizatçı stok detalları"
+
+msgid "Vendors"
+msgstr "Təchizatçılar"
+
+msgid "View"
+msgstr "Bax"
+
+msgid "WMS"
+msgstr "WMS"
+
+msgid "Warehouse"
+msgstr "Anbar"
+
+msgid "Warehouse Console"
+msgstr "Anbar konsolu"
+
+msgid "Warehouse Stock"
+msgstr "Anbar stokları"
+
+msgid "Warehouses"
+msgstr "Anbarlar"
+
+msgid "You don’t have permission to view or edit anything."
+msgstr "Heç nəyə baxmaq və ya redaktə etmək üçün icazəniz yoxdur."
+
+msgid "You have been logged out."
+msgstr "Sistemdən çıxış etdiniz."

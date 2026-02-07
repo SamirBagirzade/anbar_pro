@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 import hashlib
 
 
@@ -41,9 +42,9 @@ class OutgoingLocation(models.Model):
     TYPE_PROJECT = "project"
     TYPE_CLIENT = "client"
     TYPE_CHOICES = [
-        (TYPE_DEPARTMENT, "Department"),
-        (TYPE_PROJECT, "Project"),
-        (TYPE_CLIENT, "Client"),
+        (TYPE_DEPARTMENT, _("Department")),
+        (TYPE_PROJECT, _("Project")),
+        (TYPE_CLIENT, _("Client")),
     ]
 
     name = models.CharField(max_length=255, unique=True)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 from wms.masters.models import Warehouse, Item
 
 
@@ -11,11 +12,11 @@ class StockMovement(models.Model):
     TYPE_ADJUSTMENT = "ADJUSTMENT"
 
     MOVEMENT_TYPES = [
-        (TYPE_IN_PURCHASE, "In Purchase"),
-        (TYPE_OUT_ISSUE, "Out Issue"),
-        (TYPE_TRANSFER_IN, "Transfer In"),
-        (TYPE_TRANSFER_OUT, "Transfer Out"),
-        (TYPE_ADJUSTMENT, "Adjustment"),
+        (TYPE_IN_PURCHASE, _("In Purchase")),
+        (TYPE_OUT_ISSUE, _("Out Issue")),
+        (TYPE_TRANSFER_IN, _("Transfer In")),
+        (TYPE_TRANSFER_OUT, _("Transfer Out")),
+        (TYPE_ADJUSTMENT, _("Adjustment")),
     ]
 
     warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
@@ -38,7 +39,7 @@ class StockMovement(models.Model):
             models.Index(fields=["created_at"]),
         ]
         permissions = [
-            ("override_negative_stock", "Can override negative stock"),
+            ("override_negative_stock", _("Can override negative stock")),
         ]
 
 

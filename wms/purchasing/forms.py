@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from django.forms import inlineformset_factory
 from decimal import Decimal
 from .models import PurchaseHeader, PurchaseLine, PurchaseAttachment
@@ -9,12 +10,25 @@ class PurchaseHeaderForm(forms.ModelForm):
     class Meta:
         model = PurchaseHeader
         fields = ["vendor", "warehouse", "currency", "notes"]
+        labels = {
+            "vendor": _("Vendor"),
+            "warehouse": _("Warehouse"),
+            "currency": _("Currency"),
+            "notes": _("Notes"),
+        }
 
 
 class PurchaseLineForm(forms.ModelForm):
     class Meta:
         model = PurchaseLine
         fields = ["item", "qty", "unit_price", "discount", "tax_rate"]
+        labels = {
+            "item": _("Item"),
+            "qty": _("Qty"),
+            "unit_price": _("Unit Price"),
+            "discount": _("Discount"),
+            "tax_rate": _("Tax Rate"),
+        }
 
     def clean(self):
         cleaned = super().clean()
@@ -44,3 +58,4 @@ class PurchaseAttachmentForm(forms.ModelForm):
     class Meta:
         model = PurchaseAttachment
         fields = ["file"]
+        labels = {"file": _("File")}

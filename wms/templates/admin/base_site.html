@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -10,7 +10,7 @@
 <div id="site-name">
   <a href="{% url 'admin:index' %}">
     <span class="brand-mark">anbar</span>
-    <span class="brand-sub">warehouse console</span>
+    <span class="brand-sub">{% trans "Warehouse Console" %}</span>
   </a>
 </div>
 {% endblock %}

@@ -1,10 +1,12 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from django.forms import inlineformset_factory
 from .models import IssueHeader, IssueLine
 
 
 class IssueHeaderForm(forms.ModelForm):
     issue_date = forms.DateField(
+        label=_("Issue Date"),
         input_formats=["%d/%m/%Y", "%d.%m.%Y", "%Y-%m-%d"],
         widget=forms.DateInput(
             attrs={"type": "text", "placeholder": "dd/mm/yyyy", "inputmode": "numeric", "data-date-picker": "1"},
@@ -15,6 +17,11 @@ class IssueHeaderForm(forms.ModelForm):
     class Meta:
         model = IssueHeader
         fields = ["warehouse", "outgoing_location", "issue_date", "notes"]
+        labels = {
+            "warehouse": _("Warehouse"),
+            "outgoing_location": _("Outgoing Location"),
+            "notes": _("Notes"),
+        }
 
     def __init__(self, *args, **kwargs):
         from django.utils import timezone
@@ -27,6 +34,7 @@ class IssueLineForm(forms.ModelForm):
     class Meta:
         model = IssueLine
         fields = ["item", "qty"]
+        labels = {"item": _("Item"), "qty": _("Qty")}
 
 
 IssueLineFormSet = inlineformset_factory(
