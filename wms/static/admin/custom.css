@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Source+Serif+4:wght@400;600;700&display=swap");
 
+/* ==================== CSS VARIABLES ==================== */
 :root {
   --ink: #0f172a;
   --ink-muted: #64748b;
@@ -7,26 +8,45 @@
   --accent-strong: #1d4ed8;
   --success: #10b981;
   --success-hover: #059669;
-  --bg: #eef2f7;
+  --bg: #f1f5f9;
   --bg-soft: #f8fafc;
   --card: #ffffff;
-  --sidebar-bg: #f1f5f9;
   --line: #e2e8f0;
-  --shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+  --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
   --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+/* ==================== GLOBAL RESETS ==================== */
+* {
+  box-sizing: border-box;
 }
 
 html,
 body {
-  background: linear-gradient(180deg, #f7f9fc 0%, #eef2f7 60%, #e7edf5 100%);
+  background: linear-gradient(180deg, #f7f9fc 0%, #eef2f7 100%) !important;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  color: var(--ink);
-  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: var(--ink) !important;
+  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
   line-height: 1.6;
 }
 
+/* Force light backgrounds everywhere */
+body,
+#container,
+#content,
+#main,
+.colMS,
+.colSM,
+#content-main,
+#content-related {
+  background: transparent !important;
+}
+
+/* ==================== LINKS ==================== */
 a:link,
 a:visited {
   color: var(--accent);
@@ -40,10 +60,10 @@ a:hover {
 
 /* ==================== HEADER ==================== */
 #header {
-  background: #ffffff;
+  background: #ffffff !important;
   border-bottom: 1px solid var(--line);
   box-shadow: var(--shadow);
-  padding: 16px 24px;
+  padding: 16px 32px !important;
 }
 
 #branding {
@@ -51,52 +71,58 @@ a:hover {
   align-items: center;
 }
 
+#branding h1,
 #branding #site-name a {
-  color: var(--ink);
+  color: var(--ink) !important;
   text-decoration: none;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
   letter-spacing: 0.3px;
+  margin: 0;
 }
 
 #user-tools {
   float: right;
   padding: 0;
   margin: 0;
+  text-align: right;
 }
 
 #user-tools a {
-  color: var(--ink-muted);
+  color: var(--ink-muted) !important;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
   transition: all 0.2s ease;
+  display: inline-block;
 }
 
 #user-tools a:hover {
   background: var(--bg-soft);
-  color: var(--ink);
+  color: var(--ink) !important;
 }
 
 /* ==================== BREADCRUMBS ==================== */
+.breadcrumbs,
 div.breadcrumbs {
-  background: var(--bg-soft);
+  background: var(--bg-soft) !important;
   border-bottom: 1px solid var(--line);
-  color: var(--ink-muted);
-  padding: 12px 24px;
+  color: var(--ink-muted) !important;
+  padding: 14px 32px;
   font-size: 13px;
 }
 
+.breadcrumbs a,
 div.breadcrumbs a {
-  color: var(--accent);
+  color: var(--accent) !important;
 }
 
 /* ==================== LOGIN PAGE ==================== */
-.login {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+body.login {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -104,7 +130,7 @@ div.breadcrumbs a {
 }
 
 .login #container {
-  background: #ffffff;
+  background: #ffffff !important;
   border-radius: 24px;
   box-shadow: 0 24px 64px rgba(15, 23, 42, 0.2);
   padding: 48px;
@@ -113,10 +139,10 @@ div.breadcrumbs a {
 }
 
 .login #header {
-  background: transparent;
+  background: transparent !important;
   border: none;
   box-shadow: none;
-  padding: 0;
+  padding: 0 !important;
   margin-bottom: 32px;
   text-align: center;
 }
@@ -126,8 +152,7 @@ div.breadcrumbs a {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 28px;
   font-weight: 700;
-  color: var(--ink);
-  letter-spacing: 0.5px;
+  color: var(--ink) !important;
 }
 
 .login form {
@@ -136,17 +161,17 @@ div.breadcrumbs a {
 
 .login .form-row {
   margin-bottom: 24px;
-  background: transparent;
+  background: transparent !important;
   padding: 0;
+  border: none !important;
 }
 
 .login label {
   display: block;
   margin-bottom: 8px;
-  color: var(--ink);
+  color: var(--ink) !important;
   font-weight: 600;
   font-size: 14px;
-  text-transform: none;
 }
 
 .login input[type="text"],
@@ -158,30 +183,29 @@ div.breadcrumbs a {
   font-size: 15px;
   font-family: "Space Grotesk", sans-serif;
   transition: all 0.2s ease;
-  background: var(--bg-soft);
-  color: var(--ink);
-  box-sizing: border-box;
+  background: var(--bg-soft) !important;
+  color: var(--ink) !important;
 }
 
 .login input[type="text"]:focus,
 .login input[type="password"]:focus {
   outline: none;
   border-color: var(--accent);
-  background: #ffffff;
+  background: #ffffff !important;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .login .submit-row {
-  background: transparent;
-  border: none;
-  padding: 24px 0 0;
+  background: transparent !important;
+  border: none !important;
+  padding: 24px 0 0 !important;
   text-align: center;
 }
 
 .login input[type="submit"] {
   width: 100%;
-  background: var(--accent);
-  color: #ffffff;
+  background: var(--accent) !important;
+  color: #ffffff !important;
   border: none;
   padding: 14px 24px;
   border-radius: 12px;
@@ -195,337 +219,204 @@ div.breadcrumbs a {
 }
 
 .login input[type="submit"]:hover {
-  background: var(--accent-strong);
+  background: var(--accent-strong) !important;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
 }
 
-/* ==================== MAIN CONTENT ==================== */
+/* ==================== MAIN LAYOUT ==================== */
 #content {
-  padding: 32px;
-  max-width: 1400px;
+  padding: 32px !important;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
-/* ==================== SIDEBAR ==================== */
-#content-main {
-  float: left;
+/* ==================== NAVIGATION SIDEBAR ==================== */
+#nav-sidebar {
+  width: 280px !important;
+  background: var(--bg) !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  margin-right: 24px !important;
+  box-shadow: var(--shadow-sm) !important;
+  position: sticky !important;
+  top: 20px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+/* Sidebar filter input */
+#nav-sidebar #changelist-filter-header {
+  background: #ffffff !important;
+  border-bottom: 2px solid var(--line);
+  border-radius: 16px 16px 0 0;
+  padding: 0 !important;
+}
+
+#nav-sidebar input[type="text"] {
   width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: #ffffff !important;
+  color: var(--ink) !important;
+  font-size: 14px;
+  border-radius: 16px 16px 0 0;
 }
 
-.change-list #content-main {
-  width: calc(100% - 280px);
+#nav-sidebar input[type="text"]:focus {
+  outline: none;
+  background: var(--bg-soft) !important;
 }
 
-#changelist-filter,
-#content-related {
-  float: right;
-  width: 260px;
-  background: var(--sidebar-bg);
-  border-radius: 16px;
-  padding: 0;
-  margin-left: 20px;
-  box-shadow: var(--shadow-sm);
+/* Sidebar sections */
+#nav-sidebar > div {
+  background: transparent !important;
+  padding: 16px !important;
 }
 
-#changelist-filter h2,
-#content-related h2 {
-  background: #ffffff;
-  color: var(--ink);
+#nav-sidebar h2,
+#nav-sidebar h3 {
+  background: transparent !important;
+  color: var(--ink) !important;
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 16px 18px;
-  margin: 0;
-  border-bottom: 2px solid var(--line);
-  border-radius: 16px 16px 0 0;
+  padding: 12px 0 8px !important;
+  margin: 16px 0 8px !important;
+  border: none !important;
 }
 
-#changelist-filter h3,
-#content-related h3 {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-muted);
-  padding: 12px 18px 8px;
-  margin: 16px 0 0;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+#nav-sidebar h2:first-child,
+#nav-sidebar h3:first-child {
+  margin-top: 0 !important;
 }
 
-#changelist-filter ul,
-#content-related ul {
-  padding: 8px;
-  margin: 0;
-  list-style: none;
+/* Sidebar links */
+#nav-sidebar ul {
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  background: transparent !important;
 }
 
-#changelist-filter li,
-#content-related li {
-  margin: 0;
-  padding: 0;
+#nav-sidebar li {
+  margin: 4px 0 !important;
+  background: transparent !important;
 }
 
-#changelist-filter a,
-#content-related a {
-  display: flex;
+#nav-sidebar a {
+  display: flex !important;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
-  color: var(--ink);
+  padding: 12px 14px !important;
+  color: var(--ink) !important;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 10px !important;
   transition: all 0.2s ease;
+  background: #ffffff !important;
   text-decoration: none;
+  margin-bottom: 4px;
 }
 
-#changelist-filter a:hover,
-#content-related a:hover {
-  background: #ffffff;
-  color: var(--accent);
+#nav-sidebar a:hover {
+  background: var(--accent) !important;
+  color: #ffffff !important;
   box-shadow: var(--shadow-sm);
+  transform: translateX(2px);
 }
 
-#changelist-filter .selected a,
-#content-related .selected a {
-  background: #ffffff;
-  color: var(--accent);
+#nav-sidebar .current a,
+#nav-sidebar .selected a {
+  background: var(--ink) !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
-/* Add links in sidebar */
-#changelist-filter .addlink,
-#content-related .addlink {
+/* Add links */
+#nav-sidebar .addlink {
   color: var(--success) !important;
-  font-weight: 700;
-  font-size: 12px;
+  font-weight: 700 !important;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
-#changelist-filter .addlink:hover,
-#content-related .addlink:hover {
-  color: var(--success-hover) !important;
-  background: rgba(16, 185, 129, 0.1);
+#nav-sidebar .addlink:hover {
+  background: var(--success) !important;
+  color: #ffffff !important;
 }
 
-/* ==================== MODULES ==================== */
-.module,
-.inline-group,
-.dashboard-module,
-.form-row {
-  border-radius: 16px;
-}
-
+/* ==================== MAIN CONTENT CARDS ==================== */
 .module,
 .dashboard-module {
-  background: var(--card);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-  margin-bottom: 20px;
+  background: var(--card) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: 20px !important;
+  margin-bottom: 24px;
+  overflow: hidden;
 }
 
 .module h2,
 .module caption,
-.inline-group h2 {
-  background: var(--bg-soft);
-  color: var(--ink);
+.inline-group h2,
+.dashboard-module h2 {
+  background: var(--bg-soft) !important;
+  color: var(--ink) !important;
   font-family: "Source Serif 4", Georgia, serif;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 16px 20px;
-  margin: 0;
-  border-bottom: 2px solid var(--line);
-  border-radius: 16px 16px 0 0;
+  padding: 18px 24px !important;
+  margin: 0 !important;
+  border-bottom: 2px solid var(--line) !important;
+  border-radius: 0 !important;
 }
 
-/* ==================== FORMS ==================== */
-.form-row {
-  background: #ffffff;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-  border: 1px solid var(--line);
-}
-
-.aligned label {
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--ink-muted);
-  margin-bottom: 6px;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"],
-input[type="number"],
-textarea,
-select {
-  padding: 10px 12px;
-  border: 2px solid var(--line);
-  border-radius: 8px;
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  background: var(--bg-soft);
-  color: var(--ink);
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus,
-input[type="number"]:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--accent);
-  background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.submit-row {
-  background: var(--bg-soft);
-  border: 1px solid var(--line);
-  padding: 16px 20px;
-  border-radius: 12px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.submit-row input,
-.button,
-input[type="submit"],
-input[type="button"],
-.object-tools a {
-  background: var(--accent);
-  border: none;
-  border-radius: 10px;
-  color: #ffffff;
-  padding: 10px 20px;
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-block;
-}
-
-.submit-row input:hover,
-.button:hover,
-input[type="submit"]:hover,
-input[type="button"]:hover,
-.object-tools a:hover {
-  background: var(--accent-strong);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
-}
-
-.deletelink,
-.deletelink-box {
-  background: #ef4444 !important;
-}
-
-.deletelink:hover,
-.deletelink-box:hover {
-  background: #dc2626 !important;
-}
-
-/* ==================== TABLES ==================== */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-table thead th {
-  background: var(--bg-soft);
-  border-bottom: 2px solid var(--line);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--ink-muted);
-  padding: 14px 16px;
-  text-align: left;
-}
-
-table tbody tr {
-  transition: background 0.2s ease;
-}
-
-table tbody tr:hover {
-  background: #f0f9ff;
-}
-
-table tbody tr:nth-child(odd) {
-  background: var(--bg-soft);
-}
-
-table tbody tr:nth-child(odd):hover {
-  background: #f0f9ff;
-}
-
-table tbody td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--line);
-}
-
-/* ==================== ADMIN INDEX CARDS ==================== */
-#content-main .module {
-  margin-bottom: 0;
-}
-
+/* ==================== ADMIN INDEX PAGE ==================== */
 .app-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
   padding: 0;
+  margin: 0;
 }
 
 .app-card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
+  background: var(--card) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 20px !important;
+  box-shadow: var(--shadow) !important;
   padding: 24px;
-  display: flex;
-  flex-direction: column;
-  min-height: 200px;
   transition: all 0.3s ease;
 }
 
 .app-card:hover {
-  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14) !important;
   transform: translateY(-4px);
 }
 
 .app-card h2 {
-  margin: 0 0 20px;
-  font-family: "Source Serif 4", Georgia, serif;
-  font-weight: 700;
-  font-size: 16px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--ink);
-  background: none;
-  border: none;
-  padding: 0;
+  margin: 0 0 20px !important;
+  font-family: "Source Serif 4", Georgia, serif !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  color: var(--ink) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
 .app-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -537,20 +428,18 @@ table tbody td {
   justify-content: space-between;
   gap: 14px;
   padding: 14px 16px;
-  background: var(--bg-soft);
+  background: var(--bg-soft) !important;
   border-radius: 12px;
-  border: 1px solid transparent;
   transition: all 0.2s ease;
 }
 
 .app-card li:hover {
-  background: #ffffff;
-  border-color: var(--accent);
+  background: #ffffff !important;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
 }
 
 .app-card .model-name {
-  color: var(--ink);
+  color: var(--ink) !important;
   font-weight: 600;
   font-size: 14px;
 }
@@ -562,173 +451,213 @@ table tbody td {
 }
 
 .app-card .model-actions a {
-  color: var(--accent);
-  font-weight: 700;
+  color: var(--accent) !important;
+  font-weight: 700 !important;
   text-transform: uppercase;
   font-size: 11px;
   letter-spacing: 0.1em;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .app-card .model-actions a:hover {
-  color: #ffffff;
-  background: var(--accent);
+  color: #ffffff !important;
+  background: var(--accent) !important;
 }
 
-/* ==================== OBJECT TOOLS ==================== */
-.object-tools {
-  float: right;
-  margin: 0 0 16px;
-  padding: 0;
+/* ==================== FORMS ==================== */
+.form-row {
+  background: transparent !important;
+  padding: 16px 24px !important;
+  margin-bottom: 16px;
+  border: none !important;
+}
+
+.aligned label {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-muted) !important;
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="url"],
+textarea,
+select {
+  padding: 12px 14px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: var(--bg-soft) !important;
+  color: var(--ink) !important;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ==================== BUTTONS ==================== */
+.submit-row {
+  background: var(--bg-soft) !important;
+  border: 1px solid var(--line) !important;
+  padding: 18px 24px !important;
+  border-radius: 12px !important;
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  align-items: center;
 }
 
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 1024px) {
-  #content {
-    padding: 20px;
-  }
+.submit-row input,
+.button,
+input[type="submit"],
+input[type="button"],
+button,
+.object-tools a {
+  background: var(--accent) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color: #ffffff !important;
+  padding: 12px 24px !important;
+  font-family: "Space Grotesk", sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+}
 
-  .change-list #content-main {
-    width: 100%;
-  }
+.submit-row input:hover,
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+button:hover,
+.object-tools a:hover {
+  background: var(--accent-strong) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
 
-  #changelist-filter,
-  #content-related {
-    float: none;
-    width: 100%;
-    margin: 20px 0 0;
-  }
+.deletelink,
+.deletelink-box,
+input[type="submit"].deletelink {
+  background: #ef4444 !important;
+}
 
-  .app-list {
-    grid-template-columns: 1fr;
-  }
+.deletelink:hover,
+.deletelink-box:hover,
+input[type="submit"].deletelink:hover {
+  background: #dc2626 !important;
+}
+
+/* ==================== TABLES ==================== */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--card) !important;
+}
+
+table thead th {
+  background: var(--bg-soft) !important;
+  border-bottom: 2px solid var(--line) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-muted) !important;
+  padding: 14px 16px !important;
+  text-align: left;
+}
+
+table tbody tr {
+  transition: background 0.2s ease;
+  background: #ffffff !important;
+}
+
+table tbody tr:hover {
+  background: #f0f9ff !important;
+}
+
+table tbody tr:nth-child(odd) {
+  background: var(--bg-soft) !important;
+}
+
+table tbody tr:nth-child(odd):hover {
+  background: #f0f9ff !important;
+}
+
+table tbody td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid var(--line) !important;
+  color: var(--ink) !important;
 }
 
 /* ==================== MESSAGES ==================== */
 .messagelist {
   padding: 0;
-  margin: 0 0 20px;
+  margin: 0 0 24px;
   list-style: none;
 }
 
 .messagelist li {
-  padding: 14px 18px;
+  padding: 16px 20px;
   margin-bottom: 12px;
   border-radius: 12px;
   font-weight: 500;
 }
 
 .messagelist .success {
-  background: #d1fae5;
-  color: #065f46;
+  background: #d1fae5 !important;
+  color: #065f46 !important;
   border-left: 4px solid var(--success);
 }
 
 .messagelist .warning {
-  background: #fef3c7;
-  color: #92400e;
+  background: #fef3c7 !important;
+  color: #92400e !important;
   border-left: 4px solid #f59e0b;
 }
 
 .messagelist .error {
-  background: #fee2e2;
-  color: #991b1b;
+  background: #fee2e2 !important;
+  color: #991b1b !important;
   border-left: 4px solid #ef4444;
 }
-/* Add these rules to your existing custom.css */
 
-/* ==================== FIX SIDEBAR DARK BACKGROUND ==================== */
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1024px) {
+  #content {
+    padding: 20px !important;
+  }
 
-/* Target the main navigation sidebar */
-#nav-sidebar,
-.change-list #changelist-filter {
-  background: var(--sidebar-bg) !important;
-}
+  #nav-sidebar {
+    width: 100% !important;
+    margin: 0 0 24px !important;
+    position: relative !important;
+  }
 
-/* Remove dark backgrounds from sidebar sections */
-#nav-sidebar .module,
-#changelist-filter h2,
-#changelist-filter h3 {
-  background: transparent !important;
-}
-
-/* Fix the sticky dark filter input */
-#changelist-filter input[type="text"] {
-  background: #ffffff !important;
-  color: var(--ink) !important;
-  border: 2px solid var(--line) !important;
-}
-
-/* Navigation sidebar links - light background */
-#nav-sidebar a {
-  background: transparent !important;
-  color: var(--ink) !important;
-  padding: 10px 12px;
-  display: block;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-#nav-sidebar a:hover {
-  background: #ffffff !important;
-  color: var(--accent) !important;
-}
-
-#nav-sidebar .current a {
-  background: #1f2937 !important;
-  color: #ffffff !important;
-}
-
-#nav-sidebar .current a:hover {
-  background: var(--ink) !important;
-}
-
-/* Sidebar action links */
-#nav-sidebar .addlink {
-  color: var(--success) !important;
-  font-weight: 700 !important;
-}
-
-#nav-sidebar .addlink:hover {
-  color: var(--success-hover) !important;
-  background: rgba(16, 185, 129, 0.1) !important;
-}
-
-/* Remove Django's default dark styling */
-.theme-auto #nav-sidebar,
-.theme-dark #nav-sidebar {
-  background: var(--sidebar-bg) !important;
-}
-
-/* Fix sidebar header */
-#nav-sidebar h2,
-#nav-sidebar h3 {
-  background: #ffffff !important;
-  color: var(--ink) !important;
-  padding: 14px 16px !important;
-  border-radius: 12px 12px 0 0 !important;
-  border-bottom: 2px solid var(--line) !important;
-}
-
-/* Sidebar sections */
-#nav-sidebar .module {
-  background: var(--card) !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 16px !important;
-  margin-bottom: 16px !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-
-#nav-sidebar ul {
-  padding: 8px !important;
-  background: var(--sidebar-bg) !important;
-}
-
-#nav-sidebar li {
-  margin: 4px 0 !important;
+  .app-list {
+    grid-template-columns: 1fr;
+  }
 }
