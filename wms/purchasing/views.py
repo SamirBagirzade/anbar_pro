@@ -4,6 +4,7 @@ from django.db import transaction
 from django.utils import timezone
 from .forms import PurchaseHeaderForm, PurchaseLineFormSet
 from .models import PurchaseAttachment
+from wms.masters.models import Item
 from wms.inventory.services import post_purchase
 from .models import PurchaseHeader
 
@@ -26,8 +27,30 @@ def purchase_create(request):
             for form in formset:
                 if not form.cleaned_data:
                     continue
+                item = form.cleaned_data.get("item")
+                item_name = (form.cleaned_data.get("item_name") or "").strip()
+                unit = (form.cleaned_data.get("unit") or "").strip()
+                if not item and not item_name:
+                    continue
+                if not item:
+                    item = form.cleaned_data.get("resolved_item")
+                    if not item:
+                        item = Item.objects.filter(name__iexact=item_name).first()
+                    if item:
+                        if unit and unit != item.unit:
+                            item.unit = unit
+                            item.save(update_fields=["unit"])
+                    else:
+                        item = Item.objects.create(name=item_name, unit=unit)
+                else:
+                    if unit and unit != item.unit:
+                        item.unit = unit
+                        item.save(update_fields=["unit"])
+
                 line = form.save(commit=False)
                 line.purchase = purchase
+                line.item = item
+                line.discount = 0
                 line.line_total = form.cleaned_data["line_total"]
                 line.save()
             for f in request.FILES.getlist("attachments"):
