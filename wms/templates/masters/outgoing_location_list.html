@@ -16,7 +16,7 @@
           <span class="me-2" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{{ o.color_hex }};"></span>
           {{ o.name }}
         </td>
-        <td>{{ o.type }}</td><td>{{ o.is_active }}</td>
+        <td>{{ o.get_type_display }}</td><td>{{ o.is_active }}</td>
         <td>
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'outgoing_location_edit' o.id %}">{% trans "Edit" %}</a>
           <a class="btn btn-sm btn-outline-danger" href="{% url 'outgoing_location_delete' o.id %}">{% trans "Delete" %}</a>

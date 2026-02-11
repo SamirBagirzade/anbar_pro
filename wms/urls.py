@@ -36,7 +36,6 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("", inventory_views.warehouse_stock, name="warehouse_stock"),
     path("inventory/movements/", inventory_views.recent_movements, name="recent_movements"),
-    path("inventory/vendor-stock/", inventory_views.vendor_stock_detail, name="vendor_stock_detail"),
     path("inventory/items/<int:item_id>/", inventory_views.item_detail, name="item_detail"),
     path("masters/vendors/", masters_views.vendor_list, name="vendor_list"),
     path("masters/vendors/new/", masters_views.vendor_create, name="vendor_create"),

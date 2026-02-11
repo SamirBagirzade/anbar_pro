@@ -65,11 +65,11 @@
             <td>{{ mv.created_at }}</td>
             <td>
               {% if mv.reference_type == "purchase" %}
-                <a href="{% url 'purchase_detail' mv.reference_id %}">{{ mv.movement_type }}</a>
+                <a href="{% url 'purchase_detail' mv.reference_id %}">{{ mv.get_movement_type_display }}</a>
               {% elif mv.reference_type == "issue" %}
-                <a href="{% url 'issue_detail' mv.reference_id %}">{{ mv.movement_type }}</a>
+                <a href="{% url 'issue_detail' mv.reference_id %}">{{ mv.get_movement_type_display }}</a>
               {% else %}
-                {{ mv.movement_type }}
+                {{ mv.get_movement_type_display }}
               {% endif %}
             </td>
             <td>{{ mv.warehouse.name }}</td>
