@@ -197,9 +197,37 @@ def outgoing_location_edit(request, location_id: int):
 def outgoing_location_delete(request, location_id: int):
     location = get_object_or_404(OutgoingLocation, pk=location_id)
     if request.method == "POST":
-        location.delete()
+        force = request.POST.get("force") == "1"
+        try:
+            location.delete()
+        except ProtectedError:
+            if not force:
+                messages.error(request, _("Outgoing location is referenced by transactions and cannot be deleted."))
+            else:
+                from wms.issuing.models import IssueHeader
+
+                with transaction.atomic():
+                    replacement_location, _ = OutgoingLocation.objects.get_or_create(
+                        name="Deleted Outgoing Location",
+                        defaults={
+                            "type": OutgoingLocation.TYPE_DEPARTMENT,
+                            "notes": _("Auto-created placeholder for force-deleted outgoing locations."),
+                            "is_active": False,
+                        },
+                    )
+                    IssueHeader.objects.filter(outgoing_location=location).update(outgoing_location=replacement_location)
+                    location.delete()
         return redirect("outgoing_location_list")
-    return render(request, "masters/confirm_delete.html", {"object": location, "cancel_url": "/masters/outgoing-locations/"})
+    return render(
+        request,
+        "masters/confirm_delete.html",
+        {
+            "object": location,
+            "cancel_url": "/masters/outgoing-locations/",
+            "allow_force": True,
+            "force_label": _("Force delete by moving related issues to a placeholder outgoing location"),
+        },
+    )
 
 
 @login_required
