@@ -16,7 +16,7 @@
       </div>
       {{ formset.management_form }}
       <table class="table table-dense mb-0">
-    <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Qty" %}</th></tr></thead>
+    <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Unit" %}</th><th>{% trans "Qty" %}</th></tr></thead>
     <tbody>
       {% for form in formset %}
         <tr>
@@ -31,6 +31,9 @@
             <div class="d-none">
               {{ form.item }}
             </div>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm issue-unit" readonly tabindex="-1">
           </td>
           <td>{{ form.qty }}</td>
         </tr>
@@ -65,6 +68,9 @@
         {{ formset.empty_form.item }}
       </div>
     </td>
+    <td>
+      <input type="text" class="form-control form-control-sm issue-unit" readonly tabindex="-1">
+    </td>
     <td>{{ formset.empty_form.qty }}</td>
   </tr>
 </template>
@@ -80,6 +86,11 @@
         select.value = itemId;
       }
       input.value = itemName;
+      var row = container.closest('tr');
+      if (row) {
+        var unitInput = row.querySelector('.issue-unit');
+        if (unitInput) unitInput.value = itemUnit || '';
+      }
       var results = container.querySelector('[id^="item-results-"]');
       if (results) results.innerHTML = '';
     };
