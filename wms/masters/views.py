@@ -214,27 +214,28 @@ def outgoing_location_delete(request, location_id: int):
                 messages.error(request, _("Outgoing location is referenced by transactions and cannot be deleted."))
             else:
                 from wms.issuing.models import IssueHeader
+                from wms.inventory.models import StockMovement, StockBalance
 
                 with transaction.atomic():
-                    replacement_location, created_location = OutgoingLocation.objects.get_or_create(
-                        name="Deleted Outgoing Location",
-                        defaults={
-                            "type": OutgoingLocation.TYPE_DEPARTMENT,
-                            "notes": _("Auto-created placeholder for force-deleted outgoing locations."),
-                            "is_active": False,
-                        },
+                    issue_ids = list(
+                        IssueHeader.objects.filter(outgoing_location=location).values_list("id", flat=True)
                     )
-                    if replacement_location.pk == location.pk:
-                        suffix = 2
-                        while OutgoingLocation.objects.filter(name=f"Deleted Outgoing Location {suffix}").exists():
-                            suffix += 1
-                        replacement_location = OutgoingLocation.objects.create(
-                            name=f"Deleted Outgoing Location {suffix}",
-                            type=OutgoingLocation.TYPE_DEPARTMENT,
-                            notes=_("Auto-created placeholder for force-deleted outgoing locations."),
-                            is_active=False,
-                        )
-                    IssueHeader.objects.filter(outgoing_location=location).update(outgoing_location=replacement_location)
+                    if issue_ids:
+                        # Reverse stock impact from posted issue movements before deleting those issues.
+                        issue_movements = StockMovement.objects.filter(
+                            reference_type="issue",
+                            reference_id__in=issue_ids,
+                        ).select_related("warehouse", "item")
+                        for mv in issue_movements:
+                            balance, created_balance = StockBalance.objects.get_or_create(
+                                warehouse=mv.warehouse,
+                                item=mv.item,
+                                defaults={"on_hand": 0},
+                            )
+                            balance.on_hand = quantize_qty(balance.on_hand - mv.qty_delta)
+                            balance.save(update_fields=["on_hand"])
+                        issue_movements.delete()
+                        IssueHeader.objects.filter(id__in=issue_ids).delete()
                     location.delete()
         return redirect("outgoing_location_list")
     return render(
@@ -244,7 +245,7 @@ def outgoing_location_delete(request, location_id: int):
             "object": location,
             "cancel_url": "/masters/outgoing-locations/",
             "allow_force": True,
-            "force_label": _("Force delete by moving related issues to a placeholder outgoing location"),
+            "force_label": _("Force delete and remove related issues/movements"),
         },
     )
 
