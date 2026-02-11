@@ -92,7 +92,7 @@ def vendor_delete(request, vendor_id: int):
                 messages.error(request, _("Vendor is referenced by transactions and cannot be deleted."))
             else:
                 with transaction.atomic():
-                    replacement_vendor, _ = Vendor.objects.get_or_create(
+                    replacement_vendor, created_vendor = Vendor.objects.get_or_create(
                         name="Deleted Vendor",
                         defaults={
                             "notes": _("Auto-created placeholder for force-deleted vendors."),
@@ -207,7 +207,7 @@ def outgoing_location_delete(request, location_id: int):
                 from wms.issuing.models import IssueHeader
 
                 with transaction.atomic():
-                    replacement_location, _ = OutgoingLocation.objects.get_or_create(
+                    replacement_location, created_location = OutgoingLocation.objects.get_or_create(
                         name="Deleted Outgoing Location",
                         defaults={
                             "type": OutgoingLocation.TYPE_DEPARTMENT,
