@@ -27,11 +27,35 @@
 <div class="card">
   <div class="card-body">
     <h6>{% trans "Attachments" %}</h6>
+    {% if perms.issuing.change_issueheader %}
+      <form method="post" enctype="multipart/form-data" class="mb-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_attachment">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-8">
+            <input class="form-control" type="file" name="attachments" multiple />
+          </div>
+          <div class="col-md-4">
+            <button class="btn btn-sm btn-outline-primary" type="submit">{% trans "Add" %}</button>
+          </div>
+        </div>
+      </form>
+    {% endif %}
     <ul class="list-group list-group-flush">
       {% for att in attachments %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <a href="{{ att.file.url }}" target="_blank">{{ att.original_name }}</a>
-          <span class="text-muted">{{ att.uploaded_at }}</span>
+          <div>
+            <a href="{{ att.file.url }}" target="_blank">{{ att.original_name }}</a>
+            <span class="text-muted ms-2">{{ att.uploaded_at }}</span>
+          </div>
+          {% if perms.issuing.change_issueheader %}
+            <form method="post" class="m-0">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="delete_attachment">
+              <input type="hidden" name="attachment_id" value="{{ att.id }}">
+              <button class="btn btn-sm btn-outline-danger" type="submit">{% trans "Delete" %}</button>
+            </form>
+          {% endif %}
         </li>
       {% empty %}
         <li class="list-group-item text-muted">{% trans "No attachments." %}</li>

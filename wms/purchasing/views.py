@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.utils import timezone
 from .forms import PurchaseHeaderForm, PurchaseLineFormSet
@@ -86,6 +87,25 @@ def purchase_create(request):
 @permission_required("purchasing.view_purchaseheader", raise_exception=True)
 def purchase_detail(request, purchase_id: int):
     purchase = get_object_or_404(PurchaseHeader, pk=purchase_id)
+    if request.method == "POST":
+        if not request.user.has_perm("purchasing.change_purchaseheader"):
+            raise PermissionDenied
+        action = request.POST.get("action")
+        if action == "add_attachment":
+            for f in request.FILES.getlist("attachments"):
+                PurchaseAttachment.objects.create(
+                    purchase=purchase,
+                    file=f,
+                    original_name=f.name,
+                    file_type=getattr(f, "content_type", ""),
+                    uploaded_by=request.user,
+                )
+        elif action == "delete_attachment":
+            attachment_id = request.POST.get("attachment_id")
+            attachment = get_object_or_404(PurchaseAttachment, pk=attachment_id, purchase=purchase)
+            attachment.delete()
+        return redirect("purchase_detail", purchase_id=purchase.id)
+
     return render(
         request,
         "purchasing/purchase_detail.html",

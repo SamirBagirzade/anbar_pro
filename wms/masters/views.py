@@ -50,6 +50,11 @@ def vendor_create(request):
 def vendor_edit(request, vendor_id: int):
     vendor = get_object_or_404(Vendor, pk=vendor_id)
     if request.method == "POST":
+        if request.POST.get("action") == "delete_attachment":
+            attachment_id = request.POST.get("attachment_id")
+            attachment = get_object_or_404(VendorAttachment, pk=attachment_id, vendor=vendor)
+            attachment.delete()
+            return redirect("vendor_edit", vendor_id=vendor.id)
         form = VendorForm(request.POST, instance=vendor)
         attachment_form = VendorAttachmentForm(request.POST, request.FILES)
         if form.is_valid():
@@ -79,9 +84,34 @@ def vendor_edit(request, vendor_id: int):
 def vendor_delete(request, vendor_id: int):
     vendor = get_object_or_404(Vendor, pk=vendor_id)
     if request.method == "POST":
-        vendor.delete()
+        force = request.POST.get("force") == "1"
+        try:
+            vendor.delete()
+        except ProtectedError:
+            if not force:
+                messages.error(request, _("Vendor is referenced by transactions and cannot be deleted."))
+            else:
+                with transaction.atomic():
+                    replacement_vendor, _ = Vendor.objects.get_or_create(
+                        name="Deleted Vendor",
+                        defaults={
+                            "notes": _("Auto-created placeholder for force-deleted vendors."),
+                            "is_active": False,
+                        },
+                    )
+                    PurchaseHeader.objects.filter(vendor=vendor).update(vendor=replacement_vendor)
+                    vendor.delete()
         return redirect("vendor_list")
-    return render(request, "masters/confirm_delete.html", {"object": vendor, "cancel_url": "/masters/vendors/"})
+    return render(
+        request,
+        "masters/confirm_delete.html",
+        {
+            "object": vendor,
+            "cancel_url": "/masters/vendors/",
+            "allow_force": True,
+            "force_label": _("Force delete by moving related purchases to a placeholder vendor"),
+        },
+    )
 
 
 @login_required
