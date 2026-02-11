@@ -99,6 +99,15 @@ def vendor_delete(request, vendor_id: int):
                             "is_active": False,
                         },
                     )
+                    if replacement_vendor.pk == vendor.pk:
+                        suffix = 2
+                        while Vendor.objects.filter(name=f"Deleted Vendor {suffix}").exists():
+                            suffix += 1
+                        replacement_vendor = Vendor.objects.create(
+                            name=f"Deleted Vendor {suffix}",
+                            notes=_("Auto-created placeholder for force-deleted vendors."),
+                            is_active=False,
+                        )
                     PurchaseHeader.objects.filter(vendor=vendor).update(vendor=replacement_vendor)
                     vendor.delete()
         return redirect("vendor_list")
@@ -215,6 +224,16 @@ def outgoing_location_delete(request, location_id: int):
                             "is_active": False,
                         },
                     )
+                    if replacement_location.pk == location.pk:
+                        suffix = 2
+                        while OutgoingLocation.objects.filter(name=f"Deleted Outgoing Location {suffix}").exists():
+                            suffix += 1
+                        replacement_location = OutgoingLocation.objects.create(
+                            name=f"Deleted Outgoing Location {suffix}",
+                            type=OutgoingLocation.TYPE_DEPARTMENT,
+                            notes=_("Auto-created placeholder for force-deleted outgoing locations."),
+                            is_active=False,
+                        )
                     IssueHeader.objects.filter(outgoing_location=location).update(outgoing_location=replacement_location)
                     location.delete()
         return redirect("outgoing_location_list")
