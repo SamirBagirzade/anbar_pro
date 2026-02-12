@@ -1,4 +1,5 @@
 from decimal import Decimal, ROUND_HALF_UP
+from collections import defaultdict
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
@@ -187,3 +188,73 @@ def post_adjustment(adjustment: AdjustmentHeader, user, override_reason=""):
     adjustment.posted_at = timezone.now()
     adjustment.save(update_fields=["is_posted", "posted_at"])
     return adjustment
+
+
+@transaction.atomic
+def delete_purchase_with_inventory(purchase: PurchaseHeader):
+    purchase = PurchaseHeader.objects.select_for_update().get(pk=purchase.pk)
+
+    if purchase.is_posted:
+        item_qty = defaultdict(Decimal)
+        movements = StockMovement.objects.select_for_update().filter(
+            reference_type="purchase",
+            reference_id=purchase.id,
+            movement_type=StockMovement.TYPE_IN_PURCHASE,
+        )
+
+        has_movements = movements.exists()
+        if has_movements:
+            for movement in movements.select_related("item"):
+                item_qty[movement.item_id] += movement.qty_delta
+        else:
+            for line in purchase.lines.select_related("item"):
+                item_qty[line.item_id] += line.qty
+
+        for item_id, qty in item_qty.items():
+            balance, _ = StockBalance.objects.select_for_update().get_or_create(
+                warehouse=purchase.warehouse,
+                item_id=item_id,
+                defaults={"on_hand": Decimal("0")},
+            )
+            balance.on_hand = quantize_qty(balance.on_hand - quantize_qty(qty))
+            balance.save(update_fields=["on_hand"])
+
+        if has_movements:
+            movements.delete()
+
+    purchase.delete()
+
+
+@transaction.atomic
+def delete_issue_with_inventory(issue: IssueHeader):
+    issue = IssueHeader.objects.select_for_update().get(pk=issue.pk)
+
+    if issue.is_posted:
+        item_qty = defaultdict(Decimal)
+        movements = StockMovement.objects.select_for_update().filter(
+            reference_type="issue",
+            reference_id=issue.id,
+            movement_type=StockMovement.TYPE_OUT_ISSUE,
+        )
+
+        has_movements = movements.exists()
+        if has_movements:
+            for movement in movements.select_related("item"):
+                item_qty[movement.item_id] += abs(movement.qty_delta)
+        else:
+            for line in issue.lines.select_related("item"):
+                item_qty[line.item_id] += line.qty
+
+        for item_id, qty in item_qty.items():
+            balance, _ = StockBalance.objects.select_for_update().get_or_create(
+                warehouse=issue.warehouse,
+                item_id=item_id,
+                defaults={"on_hand": Decimal("0")},
+            )
+            balance.on_hand = quantize_qty(balance.on_hand + quantize_qty(qty))
+            balance.save(update_fields=["on_hand"])
+
+        if has_movements:
+            movements.delete()
+
+    issue.delete()

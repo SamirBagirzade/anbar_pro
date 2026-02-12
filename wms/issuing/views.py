@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum
 from django.db import transaction
 from .forms import IssueHeaderForm, IssueLineFormSet
-from wms.inventory.services import post_issue
+from wms.inventory.services import post_issue, delete_issue_with_inventory
 from .models import IssueAttachment, IssueHeader
 
 
@@ -20,7 +20,7 @@ def issue_list(request):
             raise PermissionDenied
         issue_id = request.POST.get("issue_id")
         issue = get_object_or_404(IssueHeader, pk=issue_id)
-        issue.delete()
+        delete_issue_with_inventory(issue)
         return redirect("issue_list")
 
     issues = (

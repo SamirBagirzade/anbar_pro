@@ -7,7 +7,7 @@ from django.utils import timezone
 from .forms import PurchaseHeaderForm, PurchaseLineFormSet
 from .models import PurchaseAttachment
 from wms.masters.models import Item
-from wms.inventory.services import post_purchase
+from wms.inventory.services import post_purchase, delete_purchase_with_inventory
 from .models import PurchaseHeader
 
 
@@ -23,7 +23,7 @@ def purchase_list(request):
             raise PermissionDenied
         purchase_id = request.POST.get("purchase_id")
         purchase = get_object_or_404(PurchaseHeader, pk=purchase_id)
-        purchase.delete()
+        delete_purchase_with_inventory(purchase)
         return redirect("purchase_list")
 
     purchases = (
