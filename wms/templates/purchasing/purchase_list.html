@@ -20,6 +20,9 @@
           <th>{% trans "Invoice Date" %}</th>
           <th>{% trans "Lines" %}</th>
           <th>{% trans "Total" %}</th>
+          {% if can_delete_purchase %}
+            <th>{% trans "Actions" %}</th>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
@@ -32,9 +35,18 @@
             <td>{{ purchase.invoice_date|date:"d.m.Y" }}</td>
             <td>{{ purchase.line_count }}</td>
             <td>{{ purchase.total_amount|default_if_none:"0.00" }}</td>
+            {% if can_delete_purchase %}
+              <td>
+                <form method="post" class="m-0" onsubmit="return confirm('Delete this purchase?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="purchase_id" value="{{ purchase.id }}">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">{% trans "Delete" %}</button>
+                </form>
+              </td>
+            {% endif %}
           </tr>
         {% empty %}
-          <tr><td colspan="7">{% trans "No purchases." %}</td></tr>
+          <tr><td colspan="{% if can_delete_purchase %}8{% else %}7{% endif %}">{% trans "No purchases." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

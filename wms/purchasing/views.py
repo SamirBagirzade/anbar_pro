@@ -11,15 +11,31 @@ from wms.inventory.services import post_purchase
 from .models import PurchaseHeader
 
 
+def _can_delete_purchase(user):
+    return user.is_superuser or user.has_perm("purchasing.delete_purchaseheader")
+
+
 @login_required
 @permission_required("purchasing.view_purchaseheader", raise_exception=True)
 def purchase_list(request):
+    if request.method == "POST":
+        if not _can_delete_purchase(request.user):
+            raise PermissionDenied
+        purchase_id = request.POST.get("purchase_id")
+        purchase = get_object_or_404(PurchaseHeader, pk=purchase_id)
+        purchase.delete()
+        return redirect("purchase_list")
+
     purchases = (
         PurchaseHeader.objects.select_related("vendor", "warehouse")
         .annotate(line_count=Count("lines", distinct=True), total_amount=Sum("lines__line_total"))
         .order_by("-invoice_date", "-id")
     )
-    return render(request, "purchasing/purchase_list.html", {"purchases": purchases})
+    return render(
+        request,
+        "purchasing/purchase_list.html",
+        {"purchases": purchases, "can_delete_purchase": _can_delete_purchase(request.user)},
+    )
 
 
 @login_required

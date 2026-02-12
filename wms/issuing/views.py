@@ -8,15 +8,31 @@ from wms.inventory.services import post_issue
 from .models import IssueAttachment, IssueHeader
 
 
+def _can_delete_issue(user):
+    return user.is_superuser or user.has_perm("issuing.delete_issueheader")
+
+
 @login_required
 @permission_required("issuing.view_issueheader", raise_exception=True)
 def issue_list(request):
+    if request.method == "POST":
+        if not _can_delete_issue(request.user):
+            raise PermissionDenied
+        issue_id = request.POST.get("issue_id")
+        issue = get_object_or_404(IssueHeader, pk=issue_id)
+        issue.delete()
+        return redirect("issue_list")
+
     issues = (
         IssueHeader.objects.select_related("warehouse", "outgoing_location")
         .annotate(line_count=Count("lines", distinct=True), total_qty=Sum("lines__qty"))
         .order_by("-issue_date", "-id")
     )
-    return render(request, "issuing/issue_list.html", {"issues": issues})
+    return render(
+        request,
+        "issuing/issue_list.html",
+        {"issues": issues, "can_delete_issue": _can_delete_issue(request.user)},
+    )
 
 
 @login_required
