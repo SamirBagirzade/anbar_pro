@@ -1,10 +1,22 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
+from django.db.models import Count, Sum
 from django.db import transaction
 from .forms import IssueHeaderForm, IssueLineFormSet
 from wms.inventory.services import post_issue
 from .models import IssueAttachment, IssueHeader
+
+
+@login_required
+@permission_required("issuing.view_issueheader", raise_exception=True)
+def issue_list(request):
+    issues = (
+        IssueHeader.objects.select_related("warehouse", "outgoing_location")
+        .annotate(line_count=Count("lines", distinct=True), total_qty=Sum("lines__qty"))
+        .order_by("-issue_date", "-id")
+    )
+    return render(request, "issuing/issue_list.html", {"issues": issues})
 
 
 @login_required

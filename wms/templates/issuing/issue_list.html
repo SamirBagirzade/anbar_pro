@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h4 class="mb-0">{% trans "Outgoings" %}</h4>
+  {% if perms.issuing.add_issueheader %}
+    <a class="btn btn-sm btn-primary" href="{% url 'issue_create' %}">{% trans "New Issue" %}</a>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-dense mb-0">
+      <thead>
+        <tr>
+          <th>{% trans "Issue" %}</th>
+          <th>{% trans "Warehouse" %}</th>
+          <th>{% trans "Outgoing Location" %}</th>
+          <th>{% trans "Issue Date" %}</th>
+          <th>{% trans "Lines" %}</th>
+          <th>{% trans "Total Qty" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue in issues %}
+          <tr>
+            <td><a href="{% url 'issue_detail' issue.id %}">#{{ issue.id }}</a></td>
+            <td>{{ issue.warehouse.name }}</td>
+            <td>{{ issue.outgoing_location.name }}</td>
+            <td>{{ issue.issue_date|date:"d.m.Y" }}</td>
+            <td>{{ issue.line_count }}</td>
+            <td>{{ issue.total_qty|default_if_none:"0.000" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6">{% trans "No lines." %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

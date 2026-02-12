@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import PermissionDenied
+from django.db.models import Count, Sum
 from django.db import transaction
 from django.utils import timezone
 from .forms import PurchaseHeaderForm, PurchaseLineFormSet
@@ -8,6 +9,17 @@ from .models import PurchaseAttachment
 from wms.masters.models import Item
 from wms.inventory.services import post_purchase
 from .models import PurchaseHeader
+
+
+@login_required
+@permission_required("purchasing.view_purchaseheader", raise_exception=True)
+def purchase_list(request):
+    purchases = (
+        PurchaseHeader.objects.select_related("vendor", "warehouse")
+        .annotate(line_count=Count("lines", distinct=True), total_amount=Sum("lines__line_total"))
+        .order_by("-invoice_date", "-id")
+    )
+    return render(request, "purchasing/purchase_list.html", {"purchases": purchases})
 
 
 @login_required

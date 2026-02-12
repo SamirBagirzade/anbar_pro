@@ -54,8 +54,10 @@ urlpatterns = [
     path("masters/items/new/", masters_views.item_create, name="item_create"),
     path("masters/items/<int:item_id>/edit/", masters_views.item_edit, name="item_edit"),
     path("masters/items/<int:item_id>/delete/", masters_views.item_delete, name="item_delete"),
+    path("purchasing/purchases/", purchasing_views.purchase_list, name="purchase_list"),
     path("purchasing/purchases/new/", purchasing_views.purchase_create, name="purchase_create"),
     path("purchasing/purchases/<int:purchase_id>/", purchasing_views.purchase_detail, name="purchase_detail"),
+    path("issuing/issues/", issuing_views.issue_list, name="issue_list"),
     path("issuing/issues/new/", issuing_views.issue_create, name="issue_create"),
     path("issuing/issues/<int:issue_id>/", issuing_views.issue_detail, name="issue_detail"),
 ]
