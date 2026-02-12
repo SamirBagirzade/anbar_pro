@@ -16,7 +16,7 @@
           id="vendor-search"
           name="q"
           class="form-control"
-          placeholder="{% trans 'Search vendor' %}"
+          placeholder="Təchizatçı axtar"
           hx-get="{% url 'vendor_search' %}"
           hx-trigger="keyup changed delay:300ms"
           hx-target="#vendor-results"
@@ -74,7 +74,7 @@
               <input
                 type="text"
                 class="form-control form-control-sm unit-search"
-                placeholder="{% trans 'Search unit' %}"
+                placeholder="Ölçü vahidi axtar"
                 hx-get="{% url 'unit_search' %}"
                 hx-trigger="keyup changed delay:300ms"
                 hx-target="#unit-results-{{ forloop.counter0 }}"
@@ -129,7 +129,7 @@
         <input
           type="text"
           class="form-control form-control-sm unit-search"
-          placeholder="{% trans 'Search unit' %}"
+          placeholder="Ölçü vahidi axtar"
           hx-get="{% url 'unit_search' %}"
           hx-trigger="keyup changed delay:300ms"
           hx-target="#unit-results-__prefix__"
