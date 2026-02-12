@@ -70,21 +70,7 @@
             </div>
           </td>
           <td>
-            <div class="position-relative">
-              <input
-                type="text"
-                class="form-control form-control-sm unit-search"
-                placeholder="Ölçü vahidi axtar"
-                hx-get="{% url 'unit_search' %}"
-                hx-trigger="keyup changed delay:300ms"
-                hx-target="#unit-results-{{ forloop.counter0 }}"
-                name="{{ form.unit.html_name }}"
-                id="{{ form.unit.id_for_label }}"
-                value="{{ form.unit.value|default_if_none:'' }}"
-                autocomplete="off"
-              >
-              <div id="unit-results-{{ forloop.counter0 }}" class="position-absolute w-100" style="z-index: 10;"></div>
-            </div>
+            {{ form.unit }}
             {% for error in form.unit.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
           </td>
           <td>{{ form.qty }}</td>
@@ -124,21 +110,7 @@
       </div>
     </td>
     <td>
-      <div class="position-relative">
-        <input
-          type="text"
-          class="form-control form-control-sm unit-search"
-          placeholder="Ölçü vahidi axtar"
-          hx-get="{% url 'unit_search' %}"
-          hx-trigger="keyup changed delay:300ms"
-          hx-target="#unit-results-__prefix__"
-          name="{{ formset.empty_form.unit.html_name }}"
-          id="{{ formset.empty_form.unit.id_for_label }}"
-          value="{{ formset.empty_form.unit.value|default_if_none:'' }}"
-          autocomplete="off"
-        >
-        <div id="unit-results-__prefix__" class="position-absolute w-100" style="z-index: 10;"></div>
-      </div>
+      {{ formset.empty_form.unit }}
     </td>
     <td>{{ formset.empty_form.qty }}</td>
     <td>{{ formset.empty_form.unit_price }}</td>
@@ -157,14 +129,6 @@
       }
       input.value = vendorName;
       var results = document.getElementById('vendor-results');
-      if (results) results.innerHTML = '';
-    };
-
-    window.selectUnit = function(unitName, el) {
-      var container = el.closest('td');
-      var input = container.querySelector('.unit-search');
-      if (input) input.value = unitName;
-      var results = container.querySelector('[id^="unit-results-"]');
       if (results) results.innerHTML = '';
     };
 
@@ -225,8 +189,8 @@
     });
 
     document.addEventListener('click', function(ev) {
-      if (ev.target.closest('.item-search, .unit-search, #vendor-search, .list-group-item')) return;
-      document.querySelectorAll('[id^="item-results-"], [id^="unit-results-"], #vendor-results').forEach(function(el) {
+      if (ev.target.closest('.item-search, #vendor-search, .list-group-item')) return;
+      document.querySelectorAll('[id^="item-results-"], #vendor-results').forEach(function(el) {
         el.innerHTML = '';
       });
     });

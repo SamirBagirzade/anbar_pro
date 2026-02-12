@@ -76,6 +76,8 @@ class UnitForm(forms.ModelForm):
 
 
 class ItemForm(forms.ModelForm):
+    unit = forms.ChoiceField(required=False, label=_("Unit"))
+
     class Meta:
         model = Item
         fields = [
@@ -96,6 +98,16 @@ class ItemForm(forms.ModelForm):
             "is_active": _("Active"),
             "photo": _("Photo"),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        units = list(Unit.objects.filter(is_active=True).order_by("name").values_list("name", flat=True))
+        current_unit = (self.instance.unit or "").strip() if self.instance and self.instance.pk else ""
+        if current_unit and current_unit not in units:
+            units.append(current_unit)
+            units.sort(key=str.lower)
+        self.fields["unit"].choices = [("", "---------")] + [(unit, unit) for unit in units]
+        self.fields["unit"].widget.attrs.update({"class": "form-control"})
 
     def clean_unit(self):
         unit = (self.cleaned_data.get("unit") or "").strip()

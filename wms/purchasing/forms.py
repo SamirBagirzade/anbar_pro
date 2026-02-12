@@ -21,7 +21,7 @@ class PurchaseHeaderForm(forms.ModelForm):
 
 class PurchaseLineForm(forms.ModelForm):
     item_name = forms.CharField(required=False, label=_("Item"))
-    unit = forms.CharField(required=False, label=_("Unit"))
+    unit = forms.ChoiceField(required=False, label=_("Unit"))
 
     class Meta:
         model = PurchaseLine
@@ -35,6 +35,15 @@ class PurchaseLineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["item"].required = False
+        units = list(Unit.objects.filter(is_active=True).order_by("name").values_list("name", flat=True))
+        current_unit = (self.initial.get("unit") or "").strip()
+        if not current_unit and self.instance and self.instance.pk:
+            current_unit = (self.instance.item.unit or "").strip() if self.instance.item else ""
+        if current_unit and current_unit not in units:
+            units.append(current_unit)
+            units.sort(key=str.lower)
+        self.fields["unit"].choices = [("", "---------")] + [(unit, unit) for unit in units]
+        self.fields["unit"].widget.attrs.update({"class": "form-control form-control-sm"})
 
     def clean(self):
         cleaned = super().clean()

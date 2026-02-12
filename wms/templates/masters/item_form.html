@@ -22,21 +22,9 @@
             {{ form.category }}
             {% for error in form.category.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
           </div>
-          <div class="mb-3 position-relative">
+          <div class="mb-3">
             <label class="form-label" for="{{ form.unit.id_for_label }}">{{ form.unit.label }}</label>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Ölçü vahidi axtar"
-              hx-get="{% url 'unit_search' %}"
-              hx-trigger="keyup changed delay:300ms"
-              hx-target="#item-unit-results"
-              name="{{ form.unit.html_name }}"
-              id="{{ form.unit.id_for_label }}"
-              value="{{ form.unit.value|default_if_none:'' }}"
-              autocomplete="off"
-            >
-            <div id="item-unit-results" class="position-absolute w-100" style="z-index: 10;"></div>
+            {{ form.unit }}
             {% for error in form.unit.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
           </div>
           <div class="mb-3">
@@ -125,17 +113,6 @@
 </form>
 <script>
   (function() {
-    window.selectUnit = function(unitName, el) {
-      var container = el.closest('.position-relative');
-      var input = container.querySelector('input[name$="-unit"], input[name="unit"]');
-      if (!input) {
-        input = document.getElementById('{{ form.unit.id_for_label }}');
-      }
-      if (input) input.value = unitName;
-      var results = container.querySelector('[id$="unit-results"], [id*="unit-results"]');
-      if (results) results.innerHTML = '';
-    };
-
     window.selectVendor = function(vendorId, vendorName, el) {
       var container = el.closest('.position-relative');
       var input = container.querySelector('input[type="text"]');
@@ -159,9 +136,7 @@
     }
 
     document.addEventListener('click', function(ev) {
-      if (ev.target.closest('#item-vendor-search, input[name=\"unit\"], .list-group-item')) return;
-      var unitResults = document.getElementById('item-unit-results');
-      if (unitResults) unitResults.innerHTML = '';
+      if (ev.target.closest('#item-vendor-search, .list-group-item')) return;
       var vendorResults = document.getElementById('item-vendor-results');
       if (vendorResults) vendorResults.innerHTML = '';
     });
