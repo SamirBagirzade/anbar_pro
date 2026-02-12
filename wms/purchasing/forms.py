@@ -25,12 +25,11 @@ class PurchaseLineForm(forms.ModelForm):
 
     class Meta:
         model = PurchaseLine
-        fields = ["item", "qty", "unit_price", "tax_rate"]
+        fields = ["item", "qty", "unit_price"]
         labels = {
             "item": _("Item"),
             "qty": _("Qty"),
             "unit_price": _("Unit Price"),
-            "tax_rate": _("Tax Rate"),
         }
 
     def __init__(self, *args, **kwargs):

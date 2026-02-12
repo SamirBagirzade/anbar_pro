@@ -51,7 +51,7 @@
       </div>
       {{ formset.management_form }}
       <table class="table table-dense mb-0">
-    <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Unit" %}</th><th>{% trans "Qty" %}</th><th>{% trans "Unit Price" %}</th><th>{% trans "Tax %" %}</th></tr></thead>
+    <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Unit" %}</th><th>{% trans "Qty" %}</th><th>{% trans "Unit Price" %}</th></tr></thead>
     <tbody>
       {% for form in formset %}
         <tr>
@@ -89,7 +89,6 @@
           </td>
           <td>{{ form.qty }}</td>
           <td>{{ form.unit_price }}</td>
-          <td>{{ form.tax_rate }}</td>
         </tr>
       {% endfor %}
     </tbody>
@@ -143,7 +142,6 @@
     </td>
     <td>{{ formset.empty_form.qty }}</td>
     <td>{{ formset.empty_form.unit_price }}</td>
-    <td>{{ formset.empty_form.tax_rate }}</td>
   </tr>
 </template>
 
