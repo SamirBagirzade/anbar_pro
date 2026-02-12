@@ -4,9 +4,43 @@
 <h4 class="mb-3">{% trans "New Purchase" %}</h4>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
+  {% if header_form.non_field_errors %}
+    <div class="alert alert-danger">{{ header_form.non_field_errors }}</div>
+  {% endif %}
   <div class="card mb-3">
     <div class="card-body">
-      {{ header_form.as_p }}
+      <div class="mb-3 position-relative">
+        <label class="form-label" for="vendor-search">{% trans "Vendor" %}</label>
+        <input
+          type="text"
+          id="vendor-search"
+          class="form-control"
+          placeholder="{% trans 'Search vendor' %}"
+          hx-get="{% url 'vendor_search' %}"
+          hx-trigger="keyup changed delay:300ms"
+          hx-target="#vendor-results"
+          autocomplete="off"
+          data-select-id="{{ header_form.vendor.id_for_label }}"
+        >
+        <div id="vendor-results" class="position-absolute w-100" style="z-index: 10;"></div>
+        <div class="d-none">{{ header_form.vendor }}</div>
+        {% for error in header_form.vendor.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="{{ header_form.warehouse.id_for_label }}">{{ header_form.warehouse.label }}</label>
+        {{ header_form.warehouse }}
+        {% for error in header_form.warehouse.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="{{ header_form.currency.id_for_label }}">{{ header_form.currency.label }}</label>
+        {{ header_form.currency }}
+        {% for error in header_form.currency.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="mb-0">
+        <label class="form-label" for="{{ header_form.notes.id_for_label }}">{{ header_form.notes.label }}</label>
+        {{ header_form.notes }}
+        {% for error in header_form.notes.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+      </div>
     </div>
   </div>
   <div class="card mb-3">
@@ -34,7 +68,24 @@
               {{ form.item }}
             </div>
           </td>
-          <td>{{ form.unit }}</td>
+          <td>
+            <div class="position-relative">
+              <input
+                type="text"
+                class="form-control form-control-sm unit-search"
+                placeholder="{% trans 'Search unit' %}"
+                hx-get="{% url 'unit_search' %}"
+                hx-trigger="keyup changed delay:300ms"
+                hx-target="#unit-results-{{ forloop.counter0 }}"
+                name="{{ form.unit.html_name }}"
+                id="{{ form.unit.id_for_label }}"
+                value="{{ form.unit.value|default_if_none:'' }}"
+                autocomplete="off"
+              >
+              <div id="unit-results-{{ forloop.counter0 }}" class="position-absolute w-100" style="z-index: 10;"></div>
+            </div>
+            {% for error in form.unit.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </td>
           <td>{{ form.qty }}</td>
           <td>{{ form.unit_price }}</td>
           <td>{{ form.tax_rate }}</td>
@@ -72,7 +123,23 @@
         {{ formset.empty_form.item }}
       </div>
     </td>
-    <td>{{ formset.empty_form.unit }}</td>
+    <td>
+      <div class="position-relative">
+        <input
+          type="text"
+          class="form-control form-control-sm unit-search"
+          placeholder="{% trans 'Search unit' %}"
+          hx-get="{% url 'unit_search' %}"
+          hx-trigger="keyup changed delay:300ms"
+          hx-target="#unit-results-__prefix__"
+          name="{{ formset.empty_form.unit.html_name }}"
+          id="{{ formset.empty_form.unit.id_for_label }}"
+          value="{{ formset.empty_form.unit.value|default_if_none:'' }}"
+          autocomplete="off"
+        >
+        <div id="unit-results-__prefix__" class="position-absolute w-100" style="z-index: 10;"></div>
+      </div>
+    </td>
     <td>{{ formset.empty_form.qty }}</td>
     <td>{{ formset.empty_form.unit_price }}</td>
     <td>{{ formset.empty_form.tax_rate }}</td>
@@ -81,6 +148,27 @@
 
 <script>
   (function() {
+    window.selectVendor = function(vendorId, vendorName, el) {
+      var container = el.closest('.mb-3');
+      var input = container.querySelector('input[type="text"]');
+      var selectId = input.getAttribute('data-select-id');
+      var select = document.getElementById(selectId);
+      if (select) {
+        select.value = vendorId;
+      }
+      input.value = vendorName;
+      var results = document.getElementById('vendor-results');
+      if (results) results.innerHTML = '';
+    };
+
+    window.selectUnit = function(unitName, el) {
+      var container = el.closest('td');
+      var input = container.querySelector('.unit-search');
+      if (input) input.value = unitName;
+      var results = container.querySelector('[id^="unit-results-"]');
+      if (results) results.innerHTML = '';
+    };
+
     window.selectItem = function(itemId, itemName, itemUnit, el) {
       var container = el.closest('td');
       var input = container.querySelector('.item-search');
@@ -108,6 +196,16 @@
           if (opt) input.value = opt.text;
         }
       });
+
+      var vendorSearch = document.getElementById('vendor-search');
+      if (vendorSearch) {
+        var vendorSelectId = vendorSearch.getAttribute('data-select-id');
+        var vendorSelect = document.getElementById(vendorSelectId);
+        if (vendorSelect && vendorSelect.value) {
+          var vendorOpt = vendorSelect.options[vendorSelect.selectedIndex];
+          if (vendorOpt) vendorSearch.value = vendorOpt.text;
+        }
+      }
     }
     hydrateSelected();
 

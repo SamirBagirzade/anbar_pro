@@ -4,12 +4,61 @@
 <h4 class="mb-3">{{ title }}</h4>
 <form method="post" enctype="multipart/form-data">
   {% csrf_token %}
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+  {% endif %}
   <div class="row">
     <div class="col-md-6">
       <div class="card mb-3">
         <div class="card-body">
           <h6>{% trans "Item Details" %}</h6>
-          {{ form.as_p }}
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {{ form.name }}
+            {% for error in form.name.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+            {{ form.category }}
+            {% for error in form.category.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3 position-relative">
+            <label class="form-label" for="{{ form.unit.id_for_label }}">{{ form.unit.label }}</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="{% trans 'Search unit' %}"
+              hx-get="{% url 'unit_search' %}"
+              hx-trigger="keyup changed delay:300ms"
+              hx-target="#item-unit-results"
+              name="{{ form.unit.html_name }}"
+              id="{{ form.unit.id_for_label }}"
+              value="{{ form.unit.value|default_if_none:'' }}"
+              autocomplete="off"
+            >
+            <div id="item-unit-results" class="position-absolute w-100" style="z-index: 10;"></div>
+            {% for error in form.unit.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.min_stock.id_for_label }}">{{ form.min_stock.label }}</label>
+            {{ form.min_stock }}
+            {% for error in form.min_stock.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.notes.id_for_label }}">{{ form.notes.label }}</label>
+            {{ form.notes }}
+            {% for error in form.notes.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="{{ form.photo.id_for_label }}">{{ form.photo.label }}</label>
+            {{ form.photo }}
+            {% for error in form.photo.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="form-check">
+            {{ form.is_active }}
+            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">{{ form.is_active.label }}</label>
+            {% for error in form.is_active.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+          </div>
         </div>
       </div>
     </div>
@@ -18,7 +67,51 @@
         <div class="card-body">
           <h6>{% trans "Initial Stock (Auto Purchase)" %}</h6>
           {% if stock_form %}
-            {{ stock_form.as_p }}
+            {% if stock_form.non_field_errors %}
+              <div class="alert alert-danger">{{ stock_form.non_field_errors }}</div>
+            {% endif %}
+            <div class="mb-3 position-relative">
+              <label class="form-label" for="item-vendor-search">{% trans "Vendor" %}</label>
+              <input
+                type="text"
+                id="item-vendor-search"
+                class="form-control"
+                placeholder="{% trans 'Search vendor' %}"
+                hx-get="{% url 'vendor_search' %}"
+                hx-trigger="keyup changed delay:300ms"
+                hx-target="#item-vendor-results"
+                autocomplete="off"
+                data-select-id="{{ stock_form.vendor.id_for_label }}"
+              >
+              <div id="item-vendor-results" class="position-absolute w-100" style="z-index: 10;"></div>
+              <div class="d-none">{{ stock_form.vendor }}</div>
+              {% for error in stock_form.vendor.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ stock_form.warehouse.id_for_label }}">{{ stock_form.warehouse.label }}</label>
+              {{ stock_form.warehouse }}
+              {% for error in stock_form.warehouse.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ stock_form.qty.id_for_label }}">{{ stock_form.qty.label }}</label>
+              {{ stock_form.qty }}
+              {% for error in stock_form.qty.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ stock_form.unit_price.id_for_label }}">{{ stock_form.unit_price.label }}</label>
+              {{ stock_form.unit_price }}
+              {% for error in stock_form.unit_price.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ stock_form.currency.id_for_label }}">{{ stock_form.currency.label }}</label>
+              {{ stock_form.currency }}
+              {% for error in stock_form.currency.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ stock_form.attachments.id_for_label }}">{{ stock_form.attachments.label }}</label>
+              {{ stock_form.attachments }}
+              {% for error in stock_form.attachments.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
             <div class="form-text">{% trans "Uploading the invoice here is enough. No invoice number needed." %}</div>
           {% else %}
             <div class="text-muted">{% trans "Initial stock only required when creating a new item." %}</div>
@@ -29,4 +122,40 @@
   </div>
   <button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
 </form>
+<script>
+  (function() {
+    window.selectUnit = function(unitName, el) {
+      var container = el.closest('.position-relative');
+      var input = container.querySelector('input[name$="-unit"], input[name="unit"]');
+      if (!input) {
+        input = document.getElementById('{{ form.unit.id_for_label }}');
+      }
+      if (input) input.value = unitName;
+      var results = container.querySelector('[id$="unit-results"], [id*="unit-results"]');
+      if (results) results.innerHTML = '';
+    };
+
+    window.selectVendor = function(vendorId, vendorName, el) {
+      var container = el.closest('.position-relative');
+      var input = container.querySelector('input[type="text"]');
+      var selectId = input ? input.getAttribute('data-select-id') : null;
+      var select = selectId ? document.getElementById(selectId) : null;
+      if (select) {
+        select.value = vendorId;
+      }
+      if (input) input.value = vendorName;
+      var results = container.querySelector('[id$="vendor-results"], [id*="vendor-results"]');
+      if (results) results.innerHTML = '';
+    };
+
+    var vendorSearch = document.getElementById('item-vendor-search');
+    if (vendorSearch) {
+      var select = document.getElementById(vendorSearch.getAttribute('data-select-id'));
+      if (select && select.value) {
+        var opt = select.options[select.selectedIndex];
+        if (opt) vendorSearch.value = opt.text;
+      }
+    }
+  })();
+</script>
 {% endblock %}

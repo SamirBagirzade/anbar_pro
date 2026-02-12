@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django.forms import inlineformset_factory
 from decimal import Decimal
 from .models import PurchaseHeader, PurchaseLine, PurchaseAttachment
-from wms.masters.models import Item
+from wms.masters.models import Item, Unit
 from wms.inventory.services import quantize_money, quantize_qty
 
 
@@ -51,6 +51,8 @@ class PurchaseLineForm(forms.ModelForm):
         tax_multiplier = Decimal("1") + (tax_rate / Decimal("100"))
         line_total = quantize_money((qty * unit_price - discount) * tax_multiplier)
         cleaned["line_total"] = line_total
+        if unit and not Unit.objects.filter(name__iexact=unit, is_active=True).exists():
+            self.add_error("unit", _("Select a valid unit from the unit list."))
         if not item and item_name:
             existing = Item.objects.filter(name__iexact=item_name).first()
             if existing:

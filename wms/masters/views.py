@@ -4,8 +4,16 @@ from django.contrib import messages
 from django.db.models.deletion import ProtectedError
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
-from .models import Vendor, Warehouse, OutgoingLocation, Item, VendorAttachment
-from .forms import VendorForm, WarehouseForm, OutgoingLocationForm, ItemForm, ItemInitialStockForm, VendorAttachmentForm
+from .models import Vendor, Warehouse, OutgoingLocation, Unit, Item, VendorAttachment
+from .forms import (
+    VendorForm,
+    WarehouseForm,
+    OutgoingLocationForm,
+    UnitForm,
+    ItemForm,
+    ItemInitialStockForm,
+    VendorAttachmentForm,
+)
 from django.utils import timezone
 from wms.purchasing.models import PurchaseHeader, PurchaseLine, PurchaseAttachment
 from wms.inventory.services import post_purchase, quantize_money, quantize_qty
@@ -248,6 +256,72 @@ def outgoing_location_delete(request, location_id: int):
             "force_label": _("Force delete and remove related issues/movements"),
         },
     )
+
+
+@login_required
+@permission_required("masters.view_unit", raise_exception=True)
+def unit_list(request):
+    units = Unit.objects.order_by("name")
+    return render(request, "masters/unit_list.html", {"units": units})
+
+
+@login_required
+@permission_required("masters.add_unit", raise_exception=True)
+def unit_create(request):
+    if request.method == "POST":
+        form = UnitForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("unit_list")
+    else:
+        form = UnitForm()
+    return render(request, "masters/unit_form.html", {"form": form, "title": _("New Unit")})
+
+
+@login_required
+@permission_required("masters.change_unit", raise_exception=True)
+def unit_edit(request, unit_id: int):
+    unit = get_object_or_404(Unit, pk=unit_id)
+    if request.method == "POST":
+        form = UnitForm(request.POST, instance=unit)
+        if form.is_valid():
+            form.save()
+            return redirect("unit_list")
+    else:
+        form = UnitForm(instance=unit)
+    return render(request, "masters/unit_form.html", {"form": form, "title": _("Edit Unit")})
+
+
+@login_required
+@permission_required("masters.delete_unit", raise_exception=True)
+def unit_delete(request, unit_id: int):
+    unit = get_object_or_404(Unit, pk=unit_id)
+    if request.method == "POST":
+        unit.delete()
+        return redirect("unit_list")
+    return render(request, "masters/confirm_delete.html", {"object": unit, "cancel_url": "/masters/units/"})
+
+
+@login_required
+@permission_required("masters.view_vendor", raise_exception=True)
+def vendor_search(request):
+    q = request.GET.get("q", "").strip()
+    vendors = Vendor.objects.filter(is_active=True)
+    if q:
+        vendors = vendors.filter(name__icontains=q)
+    vendors = vendors.order_by("name")[:20]
+    return render(request, "masters/_vendor_search_list.html", {"vendors": vendors})
+
+
+@login_required
+@permission_required("masters.view_unit", raise_exception=True)
+def unit_search(request):
+    q = request.GET.get("q", "").strip()
+    units = Unit.objects.filter(is_active=True)
+    if q:
+        units = units.filter(name__icontains=q)
+    units = units.order_by("name")[:20]
+    return render(request, "masters/_unit_search_list.html", {"units": units})
 
 
 @login_required

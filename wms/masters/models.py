@@ -61,6 +61,14 @@ class OutgoingLocation(models.Model):
         return f"#{digest[:6]}"
 
 
+class Unit(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Item(models.Model):
     internal_code = models.CharField(max_length=100, unique=True, blank=True, null=True)
     name = models.CharField(max_length=255)

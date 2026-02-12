@@ -1,0 +1,9 @@
+{% if units %}
+  <div class="list-group shadow-sm">
+    {% for unit in units %}
+      <button type="button" class="list-group-item list-group-item-action" onclick="selectUnit('{{ unit.name|escapejs }}', this)">
+        {{ unit.name }}
+      </button>
+    {% endfor %}
+  </div>
+{% endif %}

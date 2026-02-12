@@ -1,0 +1,9 @@
+{% if vendors %}
+  <div class="list-group shadow-sm">
+    {% for vendor in vendors %}
+      <button type="button" class="list-group-item list-group-item-action" onclick="selectVendor('{{ vendor.id }}', '{{ vendor.name|escapejs }}', this)">
+        {{ vendor.name }}
+      </button>
+    {% endfor %}
+  </div>
+{% endif %}

@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from .models import Vendor, Warehouse, OutgoingLocation, Item, VendorAttachment
+from .models import Vendor, Warehouse, OutgoingLocation, Item, VendorAttachment, Unit
 from django.utils import timezone
 
 
@@ -65,6 +65,16 @@ class OutgoingLocationForm(forms.ModelForm):
         }
 
 
+class UnitForm(forms.ModelForm):
+    class Meta:
+        model = Unit
+        fields = ["name", "is_active"]
+        labels = {
+            "name": _("Name"),
+            "is_active": _("Active"),
+        }
+
+
 class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
@@ -86,6 +96,14 @@ class ItemForm(forms.ModelForm):
             "is_active": _("Active"),
             "photo": _("Photo"),
         }
+
+    def clean_unit(self):
+        unit = (self.cleaned_data.get("unit") or "").strip()
+        if not unit:
+            return unit
+        if not Unit.objects.filter(name__iexact=unit, is_active=True).exists():
+            raise forms.ValidationError(_("Select a valid unit from the unit list."))
+        return unit
 
 
 class ItemInitialStockForm(forms.Form):

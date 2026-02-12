@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h4 class="mb-0">Ölçü vahidləri</h4>
+  <a class="btn btn-sm btn-primary" href="{% url 'unit_create' %}">{% trans "New Unit" %}</a>
+</div>
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-striped table-dense mb-0">
+      <thead><tr><th>{% trans "Name" %}</th><th>{% trans "Active" %}</th><th>{% trans "Actions" %}</th></tr></thead>
+      <tbody>
+        {% for unit in units %}
+          <tr>
+            <td>{{ unit.name }}</td>
+            <td>{{ unit.is_active }}</td>
+            <td>
+              <a class="btn btn-sm btn-outline-secondary" href="{% url 'unit_edit' unit.id %}">{% trans "Edit" %}</a>
+              <a class="btn btn-sm btn-outline-danger" href="{% url 'unit_delete' unit.id %}">{% trans "Delete" %}</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="3">No units.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

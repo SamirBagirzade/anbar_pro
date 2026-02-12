@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vendor, Warehouse, OutgoingLocation, Item, VendorItem, VendorAttachment
+from .models import Vendor, Warehouse, OutgoingLocation, Unit, Item, VendorItem, VendorAttachment
 
 
 @admin.register(Vendor)
@@ -22,6 +22,12 @@ class WarehouseAdmin(admin.ModelAdmin):
 @admin.register(OutgoingLocation)
 class OutgoingLocationAdmin(admin.ModelAdmin):
     list_display = ("name", "type", "is_active")
+    search_fields = ("name",)
+
+
+@admin.register(Unit)
+class UnitAdmin(admin.ModelAdmin):
+    list_display = ("name", "is_active")
     search_fields = ("name",)
 
 

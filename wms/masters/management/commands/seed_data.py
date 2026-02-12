@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
-from wms.masters.models import Vendor, Warehouse, OutgoingLocation, Item
+from wms.masters.models import Vendor, Warehouse, OutgoingLocation, Unit, Item
 
 
 ROLE_PERMS = {
@@ -11,6 +11,7 @@ ROLE_PERMS = {
         "add_vendor", "change_vendor", "view_vendor",
         "add_warehouse", "change_warehouse", "view_warehouse",
         "add_outgoinglocation", "change_outgoinglocation", "view_outgoinglocation",
+        "add_unit", "change_unit", "view_unit",
         "add_item", "change_item", "view_item",
         "add_purchaseheader", "change_purchaseheader", "view_purchaseheader",
         "add_issueheader", "change_issueheader", "view_issueheader",
@@ -22,10 +23,12 @@ ROLE_PERMS = {
         "add_purchaseheader", "view_purchaseheader",
         "add_issueheader", "view_issueheader",
         "view_vendor", "view_warehouse", "view_outgoinglocation", "view_item",
+        "view_unit",
         "view_stockbalance", "view_stockmovement",
     ],
     "Viewer": [
         "view_vendor", "view_warehouse", "view_outgoinglocation", "view_item",
+        "view_unit",
         "view_purchaseheader", "view_issueheader",
         "view_transferheader", "view_adjustmentheader",
         "view_stockbalance", "view_stockmovement",
@@ -62,6 +65,9 @@ class Command(BaseCommand):
         if not OutgoingLocation.objects.exists():
             OutgoingLocation.objects.create(name="Maintenance", type="department")
             OutgoingLocation.objects.create(name="Project A", type="project")
+
+        if not Unit.objects.exists():
+            Unit.objects.create(name="pcs")
 
         if not Item.objects.exists():
             Item.objects.create(internal_code="ITEM-001", name="Sample Item", category="General", unit="pcs", min_stock=5)
