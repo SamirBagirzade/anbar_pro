@@ -19,6 +19,19 @@ from wms.purchasing.models import PurchaseHeader, PurchaseLine, PurchaseAttachme
 from wms.inventory.services import post_purchase, quantize_money, quantize_qty
 
 
+def _extract_search_query(request):
+    q = (request.GET.get("q") or "").strip()
+    if q:
+        return q
+    for key, value in request.GET.items():
+        if key == "q":
+            continue
+        candidate = (value or "").strip()
+        if candidate:
+            return candidate
+    return ""
+
+
 @login_required
 @permission_required("masters.view_vendor", raise_exception=True)
 def vendor_list(request):
@@ -305,22 +318,20 @@ def unit_delete(request, unit_id: int):
 @login_required
 @permission_required("masters.view_vendor", raise_exception=True)
 def vendor_search(request):
-    q = request.GET.get("q", "").strip()
-    vendors = Vendor.objects.filter(is_active=True)
+    q = _extract_search_query(request)
+    vendors = Vendor.objects.none()
     if q:
-        vendors = vendors.filter(name__icontains=q)
-    vendors = vendors.order_by("name")[:20]
+        vendors = Vendor.objects.filter(is_active=True, name__icontains=q).order_by("name")[:20]
     return render(request, "masters/_vendor_search_list.html", {"vendors": vendors})
 
 
 @login_required
 @permission_required("masters.view_unit", raise_exception=True)
 def unit_search(request):
-    q = request.GET.get("q", "").strip()
-    units = Unit.objects.filter(is_active=True)
+    q = _extract_search_query(request)
+    units = Unit.objects.none()
     if q:
-        units = units.filter(name__icontains=q)
-    units = units.order_by("name")[:20]
+        units = Unit.objects.filter(is_active=True, name__icontains=q).order_by("name")[:20]
     return render(request, "masters/_unit_search_list.html", {"units": units})
 
 
@@ -334,11 +345,10 @@ def item_list(request):
 @login_required
 @permission_required("masters.view_item", raise_exception=True)
 def item_search(request):
-    q = request.GET.get("q", "").strip()
-    items = Item.objects.filter(is_active=True)
+    q = _extract_search_query(request)
+    items = Item.objects.none()
     if q:
-        items = items.filter(name__icontains=q)
-    items = items.order_by("name")[:20]
+        items = Item.objects.filter(is_active=True, name__icontains=q).order_by("name")[:20]
     return render(request, "masters/_item_search_list.html", {"items": items})
 
 

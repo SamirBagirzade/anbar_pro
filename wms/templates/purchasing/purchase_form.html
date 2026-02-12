@@ -224,6 +224,13 @@
       totalForms.value = index + 1;
       hydrateSelected();
     });
+
+    document.addEventListener('click', function(ev) {
+      if (ev.target.closest('.item-search, .unit-search, #vendor-search, .list-group-item')) return;
+      document.querySelectorAll('[id^="item-results-"], [id^="unit-results-"], #vendor-results').forEach(function(el) {
+        el.innerHTML = '';
+      });
+    });
   })();
 </script>
 {% endblock %}

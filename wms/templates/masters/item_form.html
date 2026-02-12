@@ -156,6 +156,14 @@
         if (opt) vendorSearch.value = opt.text;
       }
     }
+
+    document.addEventListener('click', function(ev) {
+      if (ev.target.closest('#item-vendor-search, input[name=\"unit\"], .list-group-item')) return;
+      var unitResults = document.getElementById('item-unit-results');
+      if (unitResults) unitResults.innerHTML = '';
+      var vendorResults = document.getElementById('item-vendor-results');
+      if (vendorResults) vendorResults.innerHTML = '';
+    });
   })();
 </script>
 {% endblock %}
