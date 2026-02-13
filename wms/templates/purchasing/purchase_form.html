@@ -53,6 +53,9 @@
     <div class="card-body p-0">
       <div class="p-3">
         <h6>{% trans "Lines" %}</h6>
+        {% if formset.non_form_errors %}
+          <div class="text-danger small mt-2">{{ formset.non_form_errors }}</div>
+        {% endif %}
       </div>
       {{ formset.management_form }}
       <table class="table table-dense mb-0">
@@ -61,6 +64,9 @@
       {% for form in formset %}
         <tr>
           <td>
+            {% if form.non_field_errors %}
+              <div class="text-danger small">{{ form.non_field_errors }}</div>
+            {% endif %}
             <div class="position-relative">
               <input type="text" class="form-control form-control-sm item-search" placeholder="{% trans 'Search item' %}"
                      hx-get="{% url 'item_search' %}" hx-trigger="keyup changed delay:300ms"
@@ -71,6 +77,7 @@
               <div id="item-results-{{ forloop.counter0 }}" class="position-absolute w-100" style="z-index: 10;"></div>
             </div>
             <div class="d-none">
+              {{ form.id }}
               {{ form.item }}
             </div>
           </td>
