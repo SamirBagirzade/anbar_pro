@@ -2,6 +2,11 @@
 {% load i18n %}
 {% block content %}
 <h4 class="mb-3">{% trans "Purchase" %} #{{ purchase.id }}</h4>
+{% if can_change_purchase %}
+  <div class="mb-3">
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'purchase_edit' purchase.id %}">{% trans "Edit" %}</a>
+  </div>
+{% endif %}
 <div class="card mb-3">
   <div class="card-body">
     <div><strong>{% trans "Vendor" %}:</strong> {{ purchase.vendor.name }}</div>

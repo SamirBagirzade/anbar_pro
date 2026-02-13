@@ -62,6 +62,7 @@ urlpatterns = [
     path("masters/items/<int:item_id>/delete/", masters_views.item_delete, name="item_delete"),
     path("purchasing/purchases/", purchasing_views.purchase_list, name="purchase_list"),
     path("purchasing/purchases/new/", purchasing_views.purchase_create, name="purchase_create"),
+    path("purchasing/purchases/<int:purchase_id>/edit/", purchasing_views.purchase_edit, name="purchase_edit"),
     path("purchasing/purchases/<int:purchase_id>/", purchasing_views.purchase_detail, name="purchase_detail"),
     path("issuing/issues/", issuing_views.issue_list, name="issue_list"),
     path("issuing/issues/new/", issuing_views.issue_create, name="issue_create"),

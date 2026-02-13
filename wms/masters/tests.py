@@ -5,7 +5,7 @@ from django.urls import reverse
 from wms.masters.models import Vendor, Warehouse, Item
 from wms.purchasing.models import PurchaseHeader, PurchaseLine
 from wms.inventory.models import StockMovement, StockBalance
-from wms.inventory.services import post_purchase, delete_purchase_with_inventory
+from wms.inventory.services import post_purchase, delete_purchase_with_inventory, unpost_purchase_inventory
 
 
 class ItemDeleteTests(TestCase):
@@ -118,3 +118,46 @@ class PurchaseDeleteInventoryCleanupTests(TestCase):
         delete_purchase_with_inventory(purchase1)
         item.refresh_from_db()
         self.assertTrue(item.is_active)
+
+
+class PurchaseEditInventoryTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser("admin3", "admin3@example.com", "pass")
+        self.vendor = Vendor.objects.create(name="Vendor 3")
+        self.warehouse = Warehouse.objects.create(name="WH3", location="L3")
+        self.item = Item.objects.create(name="Edit Item", unit="pcs")
+
+    def test_edit_purchase_reposts_inventory(self):
+        purchase = PurchaseHeader.objects.create(
+            vendor=self.vendor,
+            warehouse=self.warehouse,
+            invoice_no="INV-EDIT",
+            invoice_date="2026-02-13",
+            created_by=self.user,
+        )
+        PurchaseLine.objects.create(
+            purchase=purchase,
+            item=self.item,
+            qty=Decimal("5"),
+            unit_price=Decimal("4.00"),
+            discount=Decimal("0"),
+            tax_rate=Decimal("0"),
+            line_total=Decimal("20.00"),
+        )
+        post_purchase(purchase, self.user)
+
+        unpost_purchase_inventory(purchase)
+        purchase.lines.all().delete()
+        PurchaseLine.objects.create(
+            purchase=purchase,
+            item=self.item,
+            qty=Decimal("2"),
+            unit_price=Decimal("4.50"),
+            discount=Decimal("0"),
+            tax_rate=Decimal("0"),
+            line_total=Decimal("9.00"),
+        )
+        post_purchase(purchase, self.user)
+
+        balance = StockBalance.objects.get(warehouse=self.warehouse, item=self.item)
+        self.assertEqual(balance.on_hand, Decimal("2.000"))

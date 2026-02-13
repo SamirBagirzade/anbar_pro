@@ -4,15 +4,52 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from .forms import PurchaseHeaderForm, PurchaseLineFormSet
-from .models import PurchaseAttachment
+from .models import PurchaseAttachment, PurchaseLine
 from wms.masters.models import Item
-from wms.inventory.services import post_purchase, delete_purchase_with_inventory
+from wms.inventory.services import post_purchase, delete_purchase_with_inventory, unpost_purchase_inventory
 from .models import PurchaseHeader
 
 
 def _can_delete_purchase(user):
     return user.is_superuser or user.has_perm("purchasing.delete_purchaseheader")
+
+
+def _save_purchase_lines(purchase, formset):
+    purchase.lines.all().delete()
+    for form in formset:
+        if not form.cleaned_data or form.cleaned_data.get("DELETE"):
+            continue
+        item = form.cleaned_data.get("item")
+        item_name = (form.cleaned_data.get("item_name") or "").strip()
+        unit = (form.cleaned_data.get("unit") or "").strip()
+        if not item and not item_name:
+            continue
+        if not item:
+            item = form.cleaned_data.get("resolved_item")
+            if not item:
+                item = Item.objects.filter(name__iexact=item_name).first()
+            if item:
+                if unit and unit != item.unit:
+                    item.unit = unit
+                    item.save(update_fields=["unit"])
+            else:
+                item = Item.objects.create(name=item_name, unit=unit)
+        else:
+            if unit and unit != item.unit:
+                item.unit = unit
+                item.save(update_fields=["unit"])
+
+        PurchaseLine.objects.create(
+            purchase=purchase,
+            item=item,
+            qty=form.cleaned_data["qty"],
+            unit_price=form.cleaned_data["unit_price"],
+            discount=0,
+            tax_rate=0,
+            line_total=form.cleaned_data["line_total"],
+        )
 
 
 @login_required
@@ -34,7 +71,11 @@ def purchase_list(request):
     return render(
         request,
         "purchasing/purchase_list.html",
-        {"purchases": purchases, "can_delete_purchase": _can_delete_purchase(request.user)},
+        {
+            "purchases": purchases,
+            "can_delete_purchase": _can_delete_purchase(request.user),
+            "can_change_purchase": request.user.has_perm("purchasing.change_purchaseheader"),
+        },
     )
 
 
@@ -53,35 +94,7 @@ def purchase_create(request):
                 purchase.invoice_date = timezone.localdate()
             purchase.save()
             formset.instance = purchase
-            for form in formset:
-                if not form.cleaned_data:
-                    continue
-                item = form.cleaned_data.get("item")
-                item_name = (form.cleaned_data.get("item_name") or "").strip()
-                unit = (form.cleaned_data.get("unit") or "").strip()
-                if not item and not item_name:
-                    continue
-                if not item:
-                    item = form.cleaned_data.get("resolved_item")
-                    if not item:
-                        item = Item.objects.filter(name__iexact=item_name).first()
-                    if item:
-                        if unit and unit != item.unit:
-                            item.unit = unit
-                            item.save(update_fields=["unit"])
-                    else:
-                        item = Item.objects.create(name=item_name, unit=unit)
-                else:
-                    if unit and unit != item.unit:
-                        item.unit = unit
-                        item.save(update_fields=["unit"])
-
-                line = form.save(commit=False)
-                line.purchase = purchase
-                line.item = item
-                line.discount = 0
-                line.line_total = form.cleaned_data["line_total"]
-                line.save()
+            _save_purchase_lines(purchase, formset)
             for f in request.FILES.getlist("attachments"):
                 PurchaseAttachment.objects.create(
                     purchase=purchase,
@@ -107,6 +120,42 @@ def purchase_create(request):
         {
             "header_form": header_form,
             "formset": formset,
+            "title": _("New Purchase"),
+            "submit_label": _("Save & Post"),
+        },
+    )
+
+
+@login_required
+@permission_required("purchasing.change_purchaseheader", raise_exception=True)
+@transaction.atomic
+def purchase_edit(request, purchase_id: int):
+    purchase = get_object_or_404(PurchaseHeader, pk=purchase_id)
+
+    if request.method == "POST":
+        header_form = PurchaseHeaderForm(request.POST, instance=purchase)
+        formset = PurchaseLineFormSet(request.POST, instance=purchase)
+        if header_form.is_valid() and formset.is_valid():
+            unpost_purchase_inventory(purchase)
+
+            purchase = header_form.save(commit=False)
+            purchase.save()
+            formset.instance = purchase
+            _save_purchase_lines(purchase, formset)
+            post_purchase(purchase, request.user)
+            return redirect("purchase_detail", purchase_id=purchase.id)
+    else:
+        header_form = PurchaseHeaderForm(instance=purchase)
+        formset = PurchaseLineFormSet(instance=purchase)
+
+    return render(
+        request,
+        "purchasing/purchase_form.html",
+        {
+            "header_form": header_form,
+            "formset": formset,
+            "title": _("Edit Purchase"),
+            "submit_label": _("Save Changes"),
         },
     )
 
@@ -141,5 +190,6 @@ def purchase_detail(request, purchase_id: int):
             "purchase": purchase,
             "lines": purchase.lines.select_related("item"),
             "attachments": purchase.attachments.order_by("-uploaded_at"),
+            "can_change_purchase": request.user.has_perm("purchasing.change_purchaseheader"),
         },
     )
