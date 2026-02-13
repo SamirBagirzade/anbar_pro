@@ -51,6 +51,7 @@ class UnitAdmin(BulkDeleteActionMixin, admin.ModelAdmin):
 class ItemAdmin(BulkDeleteActionMixin, admin.ModelAdmin):
     list_display = ("name", "category", "unit", "min_stock", "is_active")
     search_fields = ("name", "category")
+    actions = ["bulk_delete_selected"]
 
 
 @admin.register(VendorItem)
