@@ -141,8 +141,11 @@ def purchase_edit(request, purchase_id: int):
         formset = PurchaseLineFormSet(request.POST, instance=purchase)
         if header_form.is_valid() and formset.is_valid():
             unpost_purchase_inventory(purchase)
+            purchase.refresh_from_db(fields=["is_posted", "posted_at"])
 
             purchase = header_form.save(commit=False)
+            purchase.is_posted = False
+            purchase.posted_at = None
             purchase.save()
             formset.instance = purchase
             _save_purchase_lines(purchase, formset)
