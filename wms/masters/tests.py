@@ -6,6 +6,7 @@ from wms.masters.models import Vendor, Warehouse, Item
 from wms.purchasing.models import PurchaseHeader, PurchaseLine
 from wms.inventory.models import StockMovement, StockBalance
 from wms.inventory.services import post_purchase, delete_purchase_with_inventory, unpost_purchase_inventory
+from wms.purchasing.forms import PurchaseLineFormSet
 
 
 class ItemDeleteTests(TestCase):
@@ -161,3 +162,59 @@ class PurchaseEditInventoryTests(TestCase):
 
         balance = StockBalance.objects.get(warehouse=self.warehouse, item=self.item)
         self.assertEqual(balance.on_hand, Decimal("2.000"))
+
+
+class RepurchaseReactivatesItemTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser("admin4", "admin4@example.com", "pass")
+        self.client.login(username="admin4", password="pass")
+        self.vendor = Vendor.objects.create(name="Vendor 4")
+        self.warehouse = Warehouse.objects.create(name="WH4", location="L4")
+
+    def test_repurchase_same_name_reactivates_item(self):
+        item = Item.objects.create(name="aa", unit="pcs", is_active=True)
+        purchase1 = PurchaseHeader.objects.create(
+            vendor=self.vendor,
+            warehouse=self.warehouse,
+            invoice_no="INV-A",
+            invoice_date="2026-02-13",
+            created_by=self.user,
+        )
+        PurchaseLine.objects.create(
+            purchase=purchase1,
+            item=item,
+            qty=Decimal("1"),
+            unit_price=Decimal("1.00"),
+            discount=Decimal("0"),
+            tax_rate=Decimal("0"),
+            line_total=Decimal("1.00"),
+        )
+        post_purchase(purchase1, self.user)
+        delete_purchase_with_inventory(purchase1)
+        item.refresh_from_db()
+        self.assertFalse(item.is_active)
+
+        prefix = PurchaseLineFormSet().prefix
+        response = self.client.post(
+            reverse("purchase_create"),
+            {
+                "vendor": str(self.vendor.id),
+                "warehouse": str(self.warehouse.id),
+                "invoice_date": "2026-02-14",
+                "currency": "AZN",
+                "notes": "",
+                f"{prefix}-TOTAL_FORMS": "1",
+                f"{prefix}-INITIAL_FORMS": "0",
+                f"{prefix}-MIN_NUM_FORMS": "0",
+                f"{prefix}-MAX_NUM_FORMS": "1000",
+                f"{prefix}-0-item": "",
+                f"{prefix}-0-item_name": "aa",
+                f"{prefix}-0-unit": "pcs",
+                f"{prefix}-0-qty": "2",
+                f"{prefix}-0-unit_price": "3",
+            },
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        item.refresh_from_db()
+        self.assertTrue(item.is_active)

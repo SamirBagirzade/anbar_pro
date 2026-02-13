@@ -41,6 +41,10 @@ def _save_purchase_lines(purchase, formset):
                 item.unit = unit
                 item.save(update_fields=["unit"])
 
+        if item and not item.is_active:
+            item.is_active = True
+            item.save(update_fields=["is_active"])
+
         PurchaseLine.objects.create(
             purchase=purchase,
             item=item,
