@@ -8,15 +8,31 @@ from wms.inventory.services import quantize_money, quantize_qty
 
 
 class PurchaseHeaderForm(forms.ModelForm):
+    invoice_date = forms.DateField(
+        label=_("Invoice Date"),
+        input_formats=["%d/%m/%Y", "%d.%m.%Y", "%Y-%m-%d"],
+        widget=forms.DateInput(
+            attrs={"type": "text", "placeholder": "dd/mm/yyyy", "inputmode": "numeric", "data-date-picker": "1"},
+            format="%d/%m/%Y",
+        ),
+    )
+
     class Meta:
         model = PurchaseHeader
-        fields = ["vendor", "warehouse", "currency", "notes"]
+        fields = ["vendor", "warehouse", "invoice_date", "currency", "notes"]
         labels = {
             "vendor": _("Vendor"),
             "warehouse": _("Warehouse"),
             "currency": _("Currency"),
             "notes": _("Notes"),
         }
+
+    def __init__(self, *args, **kwargs):
+        from django.utils import timezone
+
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk and not self.initial.get("invoice_date"):
+            self.initial["invoice_date"] = timezone.localdate()
 
 
 class PurchaseLineForm(forms.ModelForm):

@@ -33,6 +33,11 @@
         {% for error in header_form.warehouse.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
       </div>
       <div class="mb-3">
+        <label class="form-label" for="{{ header_form.invoice_date.id_for_label }}">{{ header_form.invoice_date.label }}</label>
+        {{ header_form.invoice_date }}
+        {% for error in header_form.invoice_date.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
         <label class="form-label" for="{{ header_form.currency.id_for_label }}">{{ header_form.currency.label }}</label>
         {{ header_form.currency }}
         {% for error in header_form.currency.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
