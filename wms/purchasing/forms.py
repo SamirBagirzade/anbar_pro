@@ -51,6 +51,7 @@ class PurchaseLineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["item"].required = False
+        self.fields["item"].label_from_instance = lambda obj: obj.name
         units = list(Unit.objects.filter(is_active=True).order_by("name").values_list("name", flat=True))
         current_unit = (self.initial.get("unit") or "").strip()
         if not current_unit and self.instance and self.instance.pk:
@@ -77,8 +78,15 @@ class PurchaseLineForm(forms.ModelForm):
         cleaned["line_total"] = line_total
         if unit and not Unit.objects.filter(name__iexact=unit, is_active=True).exists():
             self.add_error("unit", _("Select a valid unit from the unit list."))
+
+        normalized_item_name = item_name
+        if normalized_item_name and " - " in normalized_item_name:
+            # If UI text was sent as "ITEM-000123 - Name", keep only the real item name.
+            normalized_item_name = normalized_item_name.split(" - ", 1)[1].strip() or normalized_item_name
+        cleaned["item_name"] = normalized_item_name
+
         if not item and item_name:
-            existing = Item.objects.filter(name__iexact=item_name).first()
+            existing = Item.objects.filter(name__iexact=normalized_item_name).first()
             if existing:
                 cleaned["resolved_item"] = existing
             elif not unit:
