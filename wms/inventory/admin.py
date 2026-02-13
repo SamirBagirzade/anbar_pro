@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from .models import StockBalance, StockMovement, TransferHeader, TransferLine, AdjustmentHeader, AdjustmentLine
 
 
@@ -6,6 +8,17 @@ from .models import StockBalance, StockMovement, TransferHeader, TransferLine, A
 class StockBalanceAdmin(admin.ModelAdmin):
     list_display = ("warehouse", "item", "on_hand")
     search_fields = ("warehouse__name", "item__name")
+    actions = ["bulk_delete_selected"]
+
+    @admin.action(permissions=["delete"], description=_("Delete selected stock balances"))
+    def bulk_delete_selected(self, request, queryset):
+        count = queryset.count()
+        queryset.delete()
+        self.message_user(
+            request,
+            _("Deleted %(count)s stock balance record(s).") % {"count": count},
+            level=messages.SUCCESS,
+        )
 
 
 @admin.register(StockMovement)
