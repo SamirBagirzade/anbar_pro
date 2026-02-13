@@ -193,6 +193,7 @@ def post_adjustment(adjustment: AdjustmentHeader, user, override_reason=""):
 @transaction.atomic
 def delete_purchase_with_inventory(purchase: PurchaseHeader):
     purchase = PurchaseHeader.objects.select_for_update().get(pk=purchase.pk)
+    purchase_item_ids = list(purchase.lines.values_list("item_id", flat=True).distinct())
 
     if purchase.is_posted:
         item_qty = defaultdict(Decimal)
@@ -223,6 +224,29 @@ def delete_purchase_with_inventory(purchase: PurchaseHeader):
             movements.delete()
 
     purchase.delete()
+
+    # Hide/remove items that only existed because of this deleted invoice.
+    # Keep items that are still referenced by another transaction.
+    if purchase_item_ids:
+        from wms.masters.models import Item, VendorItem
+        from wms.purchasing.models import PurchaseLine
+        from wms.issuing.models import IssueLine
+        from wms.inventory.models import TransferLine, AdjustmentLine
+
+        for item_id in purchase_item_ids:
+            has_other_purchase = PurchaseLine.objects.filter(item_id=item_id).exists()
+            has_issue = IssueLine.objects.filter(item_id=item_id).exists()
+            has_transfer = TransferLine.objects.filter(item_id=item_id).exists()
+            has_adjustment = AdjustmentLine.objects.filter(item_id=item_id).exists()
+            has_movements = StockMovement.objects.filter(item_id=item_id).exists()
+            has_vendor_item = VendorItem.objects.filter(item_id=item_id).exists()
+
+            if any([has_other_purchase, has_issue, has_transfer, has_adjustment, has_movements, has_vendor_item]):
+                continue
+
+            # Remove zero balances if any, then deactivate item so it disappears from stock pages.
+            StockBalance.objects.filter(item_id=item_id, on_hand=Decimal("0")).delete()
+            Item.objects.filter(pk=item_id).update(is_active=False)
 
 
 @transaction.atomic
