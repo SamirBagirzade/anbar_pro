@@ -53,6 +53,16 @@ class ItemAdmin(BulkDeleteActionMixin, admin.ModelAdmin):
     search_fields = ("name", "category")
     actions = ["bulk_delete_selected"]
 
+    @admin.action(permissions=["change"], description=_("Delete selected records"))
+    def bulk_delete_selected(self, request, queryset):
+        count = queryset.count()
+        queryset.delete()
+        self.message_user(
+            request,
+            _("Deleted %(count)s record(s).") % {"count": count},
+            level=messages.SUCCESS,
+        )
+
 
 @admin.register(VendorItem)
 class VendorItemAdmin(BulkDeleteActionMixin, admin.ModelAdmin):

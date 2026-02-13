@@ -10,7 +10,7 @@ class StockBalanceAdmin(admin.ModelAdmin):
     search_fields = ("warehouse__name", "item__name")
     actions = ["bulk_delete_selected"]
 
-    @admin.action(permissions=["delete"], description=_("Delete selected stock balances"))
+    @admin.action(permissions=["change"], description=_("Delete selected stock balances"))
     def bulk_delete_selected(self, request, queryset):
         count = queryset.count()
         queryset.delete()
