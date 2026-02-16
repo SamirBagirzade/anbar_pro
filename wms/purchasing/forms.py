@@ -51,6 +51,7 @@ class PurchaseLineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["item"].required = False
+        self.fields["unit_price"].required = False
         self.fields["item"].label_from_instance = lambda obj: obj.name
         units = list(Unit.objects.filter(is_active=True).order_by("name").values_list("name", flat=True))
         current_unit = (self.initial.get("unit") or "").strip()
@@ -72,6 +73,7 @@ class PurchaseLineForm(forms.ModelForm):
         tax_rate = cleaned.get("tax_rate") or Decimal("0")
         qty = quantize_qty(qty)
         unit_price = quantize_money(unit_price)
+        cleaned["unit_price"] = unit_price
         discount = Decimal("0")
         tax_multiplier = Decimal("1") + (tax_rate / Decimal("100"))
         line_total = quantize_money((qty * unit_price - discount) * tax_multiplier)
