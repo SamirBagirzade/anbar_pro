@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block content %}
 <h4 class="mb-3">{% if title %}{{ title }}{% else %}{% trans "New Purchase" %}{% endif %}</h4>
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" id="purchase-form">
   {% csrf_token %}
   {% if header_form.non_field_errors %}
     <div class="alert alert-danger">{{ header_form.non_field_errors }}</div>
@@ -208,6 +208,67 @@
         el.innerHTML = '';
       });
     });
+
+    var form = document.getElementById('purchase-form');
+    if (form) {
+      form.addEventListener('submit', function(ev) {
+        var errors = [];
+
+        var vendorSearch = document.getElementById('vendor-search');
+        var vendorSelect = null;
+        if (vendorSearch) {
+          vendorSelect = document.getElementById(vendorSearch.getAttribute('data-select-id'));
+        }
+        if (!vendorSelect || !vendorSelect.value) {
+          errors.push('Təchizatçı seçilməlidir.');
+        }
+
+        var warehouseInput = document.getElementById('{{ header_form.warehouse.id_for_label }}');
+        if (warehouseInput && !warehouseInput.value) {
+          errors.push('Anbar seçilməlidir.');
+        }
+
+        var invoiceDateInput = document.getElementById('{{ header_form.invoice_date.id_for_label }}');
+        if (invoiceDateInput && !invoiceDateInput.value.trim()) {
+          errors.push('Invoice Date doldurulmalıdır.');
+        }
+
+        var hasValidLine = false;
+        document.querySelectorAll('table tbody tr').forEach(function(row) {
+          var itemSearch = row.querySelector('.item-search');
+          var qtyInput = row.querySelector('input[name$="-qty"]');
+          var itemSelect = null;
+          if (itemSearch) {
+            itemSelect = document.getElementById(itemSearch.getAttribute('data-select-id'));
+          }
+
+          var itemText = itemSearch ? itemSearch.value.trim() : '';
+          var itemVal = itemSelect ? itemSelect.value : '';
+          var qtyVal = qtyInput ? qtyInput.value.trim() : '';
+          var started = !!(itemText || qtyVal);
+          if (!started) return;
+
+          if (!itemText && !itemVal) {
+            errors.push('Sətirdə məhsul seçilməlidir.');
+          }
+          if (!qtyVal) {
+            errors.push('Sətirdə miqdar doldurulmalıdır.');
+          }
+          if ((itemText || itemVal) && qtyVal) {
+            hasValidLine = true;
+          }
+        });
+
+        if (!hasValidLine) {
+          errors.push('Ən azı bir məhsul sətri doldurulmalıdır.');
+        }
+
+        if (errors.length) {
+          ev.preventDefault();
+          alert(errors.join('\n'));
+        }
+      });
+    }
   })();
 </script>
 {% endblock %}

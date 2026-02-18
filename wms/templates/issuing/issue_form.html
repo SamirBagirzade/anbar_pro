@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block content %}
 <h4 class="mb-3">{% trans "New Issue" %}</h4>
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" id="issue-form">
   {% csrf_token %}
   <div class="card mb-3">
     <div class="card-body">
@@ -122,6 +122,63 @@
       totalForms.value = index + 1;
       hydrateSelected();
     });
+
+    var form = document.getElementById('issue-form');
+    if (form) {
+      form.addEventListener('submit', function(ev) {
+        var errors = [];
+
+        var warehouseInput = document.getElementById('{{ header_form.warehouse.id_for_label }}');
+        if (warehouseInput && !warehouseInput.value) {
+          errors.push('Anbar seçilməlidir.');
+        }
+
+        var locationInput = document.getElementById('{{ header_form.outgoing_location.id_for_label }}');
+        if (locationInput && !locationInput.value) {
+          errors.push('Çıxış yeri seçilməlidir.');
+        }
+
+        var issueDateInput = document.getElementById('{{ header_form.issue_date.id_for_label }}');
+        if (issueDateInput && !issueDateInput.value.trim()) {
+          errors.push('Issue Date doldurulmalıdır.');
+        }
+
+        var hasValidLine = false;
+        document.querySelectorAll('table tbody tr').forEach(function(row) {
+          var itemSearch = row.querySelector('.item-search');
+          var qtyInput = row.querySelector('input[name$="-qty"]');
+          var itemSelect = null;
+          if (itemSearch) {
+            itemSelect = document.getElementById(itemSearch.getAttribute('data-select-id'));
+          }
+
+          var itemText = itemSearch ? itemSearch.value.trim() : '';
+          var itemVal = itemSelect ? itemSelect.value : '';
+          var qtyVal = qtyInput ? qtyInput.value.trim() : '';
+          var started = !!(itemText || qtyVal);
+          if (!started) return;
+
+          if (!itemText && !itemVal) {
+            errors.push('Sətirdə məhsul seçilməlidir.');
+          }
+          if (!qtyVal) {
+            errors.push('Sətirdə miqdar doldurulmalıdır.');
+          }
+          if ((itemText || itemVal) && qtyVal) {
+            hasValidLine = true;
+          }
+        });
+
+        if (!hasValidLine) {
+          errors.push('Ən azı bir məhsul sətri doldurulmalıdır.');
+        }
+
+        if (errors.length) {
+          ev.preventDefault();
+          alert(errors.join('\n'));
+        }
+      });
+    }
   })();
 </script>
 {% endblock %}
