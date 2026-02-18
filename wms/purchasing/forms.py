@@ -108,6 +108,15 @@ PurchaseLineFormSet = inlineformset_factory(
 )
 
 
+PurchaseEditLineFormSet = inlineformset_factory(
+    PurchaseHeader,
+    PurchaseLine,
+    form=PurchaseLineForm,
+    extra=0,
+    can_delete=True,
+)
+
+
 class PurchaseAttachmentForm(forms.ModelForm):
     class Meta:
         model = PurchaseAttachment

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% block content %}
-<h4 class="mb-3">{% trans "New Issue" %}</h4>
+<h4 class="mb-3">{% if title %}{{ title }}{% else %}{% trans "New Issue" %}{% endif %}</h4>
 <form method="post" enctype="multipart/form-data" id="issue-form">
   {% csrf_token %}
   <div class="card mb-3">
@@ -16,11 +16,14 @@
       </div>
       {{ formset.management_form }}
       <table class="table table-dense mb-0">
-    <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Unit" %}</th><th>{% trans "Qty" %}</th></tr></thead>
+    <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Unit" %}</th><th>{% trans "Qty" %}</th><th>{% trans "Delete" %}</th></tr></thead>
     <tbody>
       {% for form in formset %}
         <tr>
           <td>
+            {% if form.non_field_errors %}
+              <div class="text-danger small">{{ form.non_field_errors }}</div>
+            {% endif %}
             <div class="position-relative">
               <input type="text" class="form-control form-control-sm item-search" placeholder="{% trans 'Search item' %}"
                      hx-get="{% url 'item_search' %}" hx-trigger="keyup changed delay:300ms"
@@ -29,13 +32,18 @@
               <div id="item-results-{{ forloop.counter0 }}" class="position-absolute w-100" style="z-index: 10;"></div>
             </div>
             <div class="d-none">
+              {{ form.id }}
               {{ form.item }}
+              {{ form.DELETE }}
             </div>
           </td>
           <td>
             <input type="text" class="form-control form-control-sm issue-unit" readonly tabindex="-1">
           </td>
           <td>{{ form.qty }}</td>
+          <td class="text-center">
+            <button type="button" class="btn btn-sm btn-outline-danger row-delete-btn">{% trans "Delete" %}</button>
+          </td>
         </tr>
       {% endfor %}
     </tbody>
@@ -51,7 +59,7 @@
       <input class="form-control" type="file" name="attachments" multiple />
     </div>
   </div>
-  <button class="btn btn-primary" type="submit">{% trans "Save & Post" %}</button>
+  <button class="btn btn-primary" type="submit">{% if submit_label %}{{ submit_label }}{% else %}{% trans "Save & Post" %}{% endif %}</button>
 </form>
 
 <template id="empty-form-template">
@@ -65,13 +73,18 @@
         <div id="item-results-__prefix__" class="position-absolute w-100" style="z-index: 10;"></div>
       </div>
       <div class="d-none">
+        {{ formset.empty_form.id }}
         {{ formset.empty_form.item }}
+        {{ formset.empty_form.DELETE }}
       </div>
     </td>
     <td>
       <input type="text" class="form-control form-control-sm issue-unit" readonly tabindex="-1">
     </td>
     <td>{{ formset.empty_form.qty }}</td>
+    <td class="text-center">
+      <button type="button" class="btn btn-sm btn-outline-danger row-delete-btn">{% trans "Delete" %}</button>
+    </td>
   </tr>
 </template>
 
@@ -101,11 +114,35 @@
         var select = document.getElementById(selectId);
         if (select && select.value) {
           var opt = select.options[select.selectedIndex];
-          if (opt) input.value = opt.text;
+          if (opt) {
+            input.value = opt.text;
+            var row = input.closest('tr');
+            if (row) {
+              var unitInput = row.querySelector('.issue-unit');
+              if (unitInput) unitInput.value = opt.getAttribute('data-unit') || '';
+            }
+          }
         }
       });
     }
     hydrateSelected();
+
+    function bindDeleteButtons(scope) {
+      (scope || document).querySelectorAll('.row-delete-btn').forEach(function(btn) {
+        if (btn.dataset.bound === '1') return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', function() {
+          var row = btn.closest('tr');
+          if (!row) return;
+          var del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+          if (del) {
+            del.checked = true;
+          }
+          row.style.display = 'none';
+        });
+      });
+    }
+    bindDeleteButtons(document);
 
     var addBtn = document.getElementById('add-line');
     var totalForms = document.getElementById('id_{{ formset.prefix }}-TOTAL_FORMS');
@@ -121,6 +158,7 @@
       tbody.appendChild(row);
       totalForms.value = index + 1;
       hydrateSelected();
+      bindDeleteButtons(row);
     });
 
     var form = document.getElementById('issue-form');
@@ -145,6 +183,9 @@
 
         var hasValidLine = false;
         document.querySelectorAll('table tbody tr').forEach(function(row) {
+          var deleteInput = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+          if (deleteInput && deleteInput.checked) return;
+
           var itemSearch = row.querySelector('.item-search');
           var qtyInput = row.querySelector('input[name$="-qty"]');
           var itemSelect = null;

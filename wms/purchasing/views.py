@@ -5,7 +5,7 @@ from django.db.models import Count, Sum
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from .forms import PurchaseHeaderForm, PurchaseLineFormSet
+from .forms import PurchaseHeaderForm, PurchaseLineFormSet, PurchaseEditLineFormSet
 from .models import PurchaseAttachment, PurchaseLine
 from wms.masters.models import Item
 from wms.inventory.services import post_purchase, delete_purchase_with_inventory, unpost_purchase_inventory
@@ -138,7 +138,7 @@ def purchase_edit(request, purchase_id: int):
 
     if request.method == "POST":
         header_form = PurchaseHeaderForm(request.POST, instance=purchase)
-        formset = PurchaseLineFormSet(request.POST, instance=purchase)
+        formset = PurchaseEditLineFormSet(request.POST, instance=purchase)
         if header_form.is_valid() and formset.is_valid():
             unpost_purchase_inventory(purchase)
             purchase.refresh_from_db(fields=["is_posted", "posted_at"])
@@ -153,7 +153,7 @@ def purchase_edit(request, purchase_id: int):
             return redirect("purchase_detail", purchase_id=purchase.id)
     else:
         header_form = PurchaseHeaderForm(instance=purchase)
-        formset = PurchaseLineFormSet(instance=purchase)
+        formset = PurchaseEditLineFormSet(instance=purchase)
 
     return render(
         request,

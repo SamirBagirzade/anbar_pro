@@ -322,3 +322,43 @@ def unpost_purchase_inventory(purchase: PurchaseHeader):
     purchase.is_posted = False
     purchase.posted_at = None
     purchase.save(update_fields=["is_posted", "posted_at"])
+
+
+@transaction.atomic
+def unpost_issue_inventory(issue: IssueHeader):
+    issue = IssueHeader.objects.select_for_update().get(pk=issue.pk)
+    if not issue.is_posted:
+        return
+
+    item_qty_by_wh = defaultdict(Decimal)
+    movements = StockMovement.objects.select_for_update().filter(
+        reference_type="issue",
+        reference_id=issue.id,
+        movement_type=StockMovement.TYPE_OUT_ISSUE,
+    )
+
+    has_movements = movements.exists()
+    if has_movements:
+        for movement in movements.select_related("warehouse", "item"):
+            key = (movement.warehouse_id, movement.item_id)
+            item_qty_by_wh[key] += abs(movement.qty_delta)
+    else:
+        for line in issue.lines.select_related("item"):
+            key = (issue.warehouse_id, line.item_id)
+            item_qty_by_wh[key] += line.qty
+
+    for (warehouse_id, item_id), qty in item_qty_by_wh.items():
+        balance, _ = StockBalance.objects.select_for_update().get_or_create(
+            warehouse_id=warehouse_id,
+            item_id=item_id,
+            defaults={"on_hand": Decimal("0")},
+        )
+        balance.on_hand = quantize_qty(balance.on_hand + quantize_qty(qty))
+        balance.save(update_fields=["on_hand"])
+
+    if has_movements:
+        movements.delete()
+
+    issue.is_posted = False
+    issue.posted_at = None
+    issue.save(update_fields=["is_posted", "posted_at"])

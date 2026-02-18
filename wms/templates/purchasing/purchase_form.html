@@ -87,7 +87,10 @@
           </td>
           <td>{{ form.qty }}</td>
           <td>{{ form.unit_price }}</td>
-          <td class="text-center">{{ form.DELETE }}</td>
+          <td class="text-center">
+            <div class="d-none">{{ form.DELETE }}</div>
+            <button type="button" class="btn btn-sm btn-outline-danger row-delete-btn">{% trans "Delete" %}</button>
+          </td>
         </tr>
       {% endfor %}
     </tbody>
@@ -119,7 +122,9 @@
         <div id="item-results-__prefix__" class="position-absolute w-100" style="z-index: 10;"></div>
       </div>
       <div class="d-none">
+        {{ formset.empty_form.id }}
         {{ formset.empty_form.item }}
+        {{ formset.empty_form.DELETE }}
       </div>
     </td>
     <td>
@@ -127,7 +132,9 @@
     </td>
     <td>{{ formset.empty_form.qty }}</td>
     <td>{{ formset.empty_form.unit_price }}</td>
-    <td></td>
+    <td class="text-center">
+      <button type="button" class="btn btn-sm btn-outline-danger row-delete-btn">{% trans "Delete" %}</button>
+    </td>
   </tr>
 </template>
 
@@ -186,6 +193,23 @@
     }
     hydrateSelected();
 
+    function bindDeleteButtons(scope) {
+      (scope || document).querySelectorAll('.row-delete-btn').forEach(function(btn) {
+        if (btn.dataset.bound === '1') return;
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', function() {
+          var row = btn.closest('tr');
+          if (!row) return;
+          var del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+          if (del) {
+            del.checked = true;
+          }
+          row.style.display = 'none';
+        });
+      });
+    }
+    bindDeleteButtons(document);
+
     var addBtn = document.getElementById('add-line');
     var totalForms = document.getElementById('id_{{ formset.prefix }}-TOTAL_FORMS');
     var tbody = document.querySelector('table tbody');
@@ -200,6 +224,7 @@
       tbody.appendChild(row);
       totalForms.value = index + 1;
       hydrateSelected();
+      bindDeleteButtons(row);
     });
 
     document.addEventListener('click', function(ev) {
@@ -235,6 +260,9 @@
 
         var hasValidLine = false;
         document.querySelectorAll('table tbody tr').forEach(function(row) {
+          var deleteInput = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+          if (deleteInput && deleteInput.checked) return;
+
           var itemSearch = row.querySelector('.item-search');
           var qtyInput = row.querySelector('input[name$="-qty"]');
           var itemSelect = null;

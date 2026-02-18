@@ -19,7 +19,7 @@
           <th>{% trans "Issue Date" %}</th>
           <th>{% trans "Lines" %}</th>
           <th>{% trans "Total Qty" %}</th>
-          {% if can_delete_issue %}
+          {% if can_change_issue or can_delete_issue %}
             <th>{% trans "Actions" %}</th>
           {% endif %}
         </tr>
@@ -33,18 +33,23 @@
             <td>{{ issue.issue_date|date:"d.m.Y" }}</td>
             <td>{{ issue.line_count }}</td>
             <td>{{ issue.total_qty|default_if_none:"0.000" }}</td>
-            {% if can_delete_issue %}
+            {% if can_change_issue or can_delete_issue %}
               <td>
-                <form method="post" class="m-0" onsubmit="return confirm('Delete this outgoing issue?');">
-                  {% csrf_token %}
-                  <input type="hidden" name="issue_id" value="{{ issue.id }}">
-                  <button class="btn btn-sm btn-outline-danger" type="submit">{% trans "Delete" %}</button>
-                </form>
+                {% if can_change_issue %}
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'issue_edit' issue.id %}">{% trans "Edit" %}</a>
+                {% endif %}
+                {% if can_delete_issue %}
+                  <form method="post" class="d-inline m-0" onsubmit="return confirm('Delete this outgoing issue?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="issue_id" value="{{ issue.id }}">
+                    <button class="btn btn-sm btn-outline-danger" type="submit">{% trans "Delete" %}</button>
+                  </form>
+                {% endif %}
               </td>
             {% endif %}
           </tr>
         {% empty %}
-          <tr><td colspan="{% if can_delete_issue %}7{% else %}6{% endif %}">{% trans "No lines." %}</td></tr>
+          <tr><td colspan="{% if can_change_issue or can_delete_issue %}7{% else %}6{% endif %}">{% trans "No lines." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

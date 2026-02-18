@@ -36,11 +36,24 @@ class IssueLineForm(forms.ModelForm):
         fields = ["item", "qty"]
         labels = {"item": _("Item"), "qty": _("Qty")}
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["item"].label_from_instance = lambda obj: obj.name
+
 
 IssueLineFormSet = inlineformset_factory(
     IssueHeader,
     IssueLine,
     form=IssueLineForm,
     extra=3,
-    can_delete=False,
+    can_delete=True,
+)
+
+
+IssueEditLineFormSet = inlineformset_factory(
+    IssueHeader,
+    IssueLine,
+    form=IssueLineForm,
+    extra=0,
+    can_delete=True,
 )
