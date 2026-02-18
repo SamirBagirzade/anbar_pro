@@ -29,21 +29,22 @@ def _parse_date(value: str):
 @permission_required("masters.view_item", raise_exception=True)
 def warehouse_stock(request):
     warehouses = Warehouse.objects.filter(is_active=True).order_by("name")
+    vendors = Vendor.objects.filter(is_active=True).order_by("name")
     selected_warehouse_id = request.GET.get("warehouse")
     if not selected_warehouse_id and warehouses.exists():
         selected_warehouse_id = str(warehouses.first().id)
+    selected_vendor_id = request.GET.get("vendor", "").strip()
 
     q = request.GET.get("q", "").strip()
-    category = request.GET.get("category", "").strip()
     low_stock = request.GET.get("low_stock", "") == "1"
-    sort = request.GET.get("sort", "name")
-    direction = request.GET.get("direction", "asc")
+    sort = request.GET.get("sort", "last_purchase_date")
+    direction = request.GET.get("direction", "desc")
 
     items = Item.objects.filter(is_active=True)
     if q:
         items = items.filter(models.Q(name__icontains=q))
-    if category:
-        items = items.filter(category__iexact=category)
+    if selected_vendor_id:
+        items = items.filter(purchaseline__purchase__vendor_id=selected_vendor_id).distinct()
 
     if selected_warehouse_id:
         stock_sub = StockBalance.objects.filter(
@@ -130,10 +131,11 @@ def warehouse_stock(request):
 
     context = {
         "warehouses": warehouses,
+        "vendors": vendors,
         "selected_warehouse_id": selected_warehouse_id,
+        "selected_vendor_id": selected_vendor_id,
         "items": page,
         "q": q,
-        "category": category,
         "low_stock": low_stock,
         "sort": sort,
         "direction": direction,

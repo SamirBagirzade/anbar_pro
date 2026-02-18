@@ -8,7 +8,7 @@
     <div class="text-muted">{% trans "At-a-glance availability by warehouse" %}</div>
   </div>
   <div>
-    <a class="btn btn-sm btn-outline-secondary" href="?{% if selected_warehouse_id %}warehouse={{ selected_warehouse_id }}&{% endif %}q={{ q }}&category={{ category }}&low_stock={{ low_stock|yesno:'1,0' }}&export=csv">{% trans "Export CSV" %}</a>
+    <a class="btn btn-sm btn-outline-secondary" href="?{% if selected_warehouse_id %}warehouse={{ selected_warehouse_id }}&{% endif %}{% if selected_vendor_id %}vendor={{ selected_vendor_id }}&{% endif %}q={{ q }}&low_stock={{ low_stock|yesno:'1,0' }}&sort={{ sort }}&direction={{ direction }}&export=csv">{% trans "Export CSV" %}</a>
   </div>
 </div>
 <div class="card mb-3">
@@ -27,8 +27,13 @@
     <input class="form-control" type="text" name="q" value="{{ q }}" placeholder="{% trans 'Item name' %}" />
   </div>
   <div class="col-md-2">
-    <label class="form-label">{% trans "Category" %}</label>
-    <input class="form-control" type="text" name="category" value="{{ category }}" />
+    <label class="form-label">{% trans "Vendor" %}</label>
+    <select class="form-select" name="vendor">
+      <option value="">{% trans "All" %}</option>
+      {% for v in vendors %}
+        <option value="{{ v.id }}" {% if v.id|stringformat:"s" == selected_vendor_id %}selected{% endif %}>{{ v.name }}</option>
+      {% endfor %}
+    </select>
   </div>
   <div class="col-md-2 d-flex align-items-end">
     <div class="form-check">
@@ -36,6 +41,8 @@
       <label class="form-check-label">{% trans "Low stock only" %}</label>
     </div>
   </div>
+      <input type="hidden" name="sort" value="{{ sort }}">
+      <input type="hidden" name="direction" value="{{ direction }}">
       <div class="col-md-2 d-flex align-items-end">
         <button class="btn btn-primary w-100" type="submit">{% trans "Filter" %}</button>
       </div>
