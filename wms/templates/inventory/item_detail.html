@@ -7,6 +7,9 @@
     <h4 class="mb-1">{{ item.name }}</h4>
     <div class="text-muted">{{ item.category }} · {{ item.unit }}</div>
   </div>
+  {% if perms.masters.delete_item %}
+    <a class="btn btn-sm btn-outline-danger" href="{% url 'item_delete' item.id %}">{% trans "Delete" %}</a>
+  {% endif %}
 </div>
 <div class="row">
   <div class="col-md-6">

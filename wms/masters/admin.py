@@ -51,7 +51,7 @@ class UnitAdmin(BulkDeleteActionMixin, admin.ModelAdmin):
 class ItemAdmin(BulkDeleteActionMixin, admin.ModelAdmin):
     list_display = ("name", "category", "unit", "min_stock", "is_active")
     search_fields = ("name", "category")
-    actions = ["bulk_delete_selected"]
+    actions = ["bulk_delete_selected", "force_delete_selected_items"]
 
     @admin.action(permissions=["change"], description=_("Delete selected records"))
     def bulk_delete_selected(self, request, queryset):
@@ -60,6 +60,31 @@ class ItemAdmin(BulkDeleteActionMixin, admin.ModelAdmin):
         self.message_user(
             request,
             _("Deleted %(count)s record(s).") % {"count": count},
+            level=messages.SUCCESS,
+        )
+
+    @admin.action(permissions=["delete"], description=_("Force delete selected items (with related movements/lines)"))
+    def force_delete_selected_items(self, request, queryset):
+        from wms.inventory.models import StockMovement, StockBalance, TransferLine, AdjustmentLine
+        from wms.issuing.models import IssueLine
+        from wms.purchasing.models import PurchaseLine
+        from wms.masters.models import VendorItem
+
+        deleted = 0
+        for item in queryset:
+            StockMovement.objects.filter(item=item).delete()
+            StockBalance.objects.filter(item=item).delete()
+            IssueLine.objects.filter(item=item).delete()
+            PurchaseLine.objects.filter(item=item).delete()
+            TransferLine.objects.filter(item=item).delete()
+            AdjustmentLine.objects.filter(item=item).delete()
+            VendorItem.objects.filter(item=item).delete()
+            item.delete()
+            deleted += 1
+
+        self.message_user(
+            request,
+            _("Force deleted %(count)s item(s).") % {"count": deleted},
             level=messages.SUCCESS,
         )
 

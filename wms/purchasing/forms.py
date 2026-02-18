@@ -57,6 +57,9 @@ class PurchaseLineForm(forms.ModelForm):
         current_unit = (self.initial.get("unit") or "").strip()
         if not current_unit and self.instance and self.instance.pk:
             current_unit = (self.instance.item.unit or "").strip() if self.instance.item else ""
+        if current_unit:
+            self.initial["unit"] = current_unit
+            self.fields["unit"].initial = current_unit
         if current_unit and current_unit not in units:
             units.append(current_unit)
             units.sort(key=str.lower)
