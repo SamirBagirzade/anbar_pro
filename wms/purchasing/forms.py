@@ -103,7 +103,7 @@ PurchaseLineFormSet = inlineformset_factory(
     PurchaseHeader,
     PurchaseLine,
     form=PurchaseLineForm,
-    extra=3,
+    extra=10,
     can_delete=True,
 )
 
