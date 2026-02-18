@@ -4,15 +4,33 @@
     <table class="table table-striped table-hover table-dense mb-0">
   <thead>
     <tr>
-      <th>{% trans "Name" %}</th>
-      <th>{% trans "Category" %}</th>
-      <th>{% trans "Unit" %}</th>
-      <th>{% trans "On Hand" %}</th>
-      <th>{% trans "Min" %}</th>
-      <th>{% trans "Last Purchase Vendor" %}</th>
-      <th>{% trans "Last Purchase Price" %}</th>
-      <th>{% trans "Last Purchase Date" %}</th>
-      <th>{% trans "Last Issue Date" %}</th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=name&direction={% if sort == 'name' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Name" %}{% if sort == "name" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=category&direction={% if sort == 'category' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Category" %}{% if sort == "category" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=unit&direction={% if sort == 'unit' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Unit" %}{% if sort == "unit" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=on_hand&direction={% if sort == 'on_hand' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "On Hand" %}{% if sort == "on_hand" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=min_stock&direction={% if sort == 'min_stock' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Min" %}{% if sort == "min_stock" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=last_purchase_vendor&direction={% if sort == 'last_purchase_vendor' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Last Purchase Vendor" %}{% if sort == "last_purchase_vendor" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=last_purchase_unit_price&direction={% if sort == 'last_purchase_unit_price' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Last Purchase Price" %}{% if sort == "last_purchase_unit_price" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=last_purchase_date&direction={% if sort == 'last_purchase_date' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Last Purchase Date" %}{% if sort == "last_purchase_date" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
+      <th>
+        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&q={{ q|urlencode }}&category={{ category|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=last_issue_date&direction={% if sort == 'last_issue_date' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Last Issue Date" %}{% if sort == "last_issue_date" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
+      </th>
       <th>{% trans "Actions" %}</th>
     </tr>
   </thead>

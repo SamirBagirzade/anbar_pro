@@ -81,6 +81,8 @@ def warehouse_stock(request):
         "unit",
         "on_hand",
         "min_stock",
+        "last_purchase_vendor",
+        "last_purchase_unit_price",
         "last_purchase_date",
         "last_issue_date",
     }:
