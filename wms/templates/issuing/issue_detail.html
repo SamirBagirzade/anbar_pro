@@ -19,12 +19,12 @@
 <div class="card mb-3">
   <div class="card-body p-0">
     <table class="table table-dense mb-0">
-      <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Qty" %}</th></tr></thead>
+      <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Unit" %}</th><th>{% trans "Qty" %}</th></tr></thead>
       <tbody>
         {% for line in lines %}
-          <tr><td>{{ line.item.name }}</td><td>{{ line.qty }}</td></tr>
+          <tr><td>{{ line.item.name }}</td><td>{{ line.item.unit }}</td><td>{{ line.qty }}</td></tr>
         {% empty %}
-          <tr><td colspan="2">{% trans "No lines." %}</td></tr>
+          <tr><td colspan="3">{% trans "No lines." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>
