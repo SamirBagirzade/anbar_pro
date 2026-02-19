@@ -222,6 +222,9 @@
       temp.innerHTML = html.trim();
       var row = temp.firstChild;
       tbody.appendChild(row);
+      if (window.htmx) {
+        window.htmx.process(row);
+      }
       totalForms.value = index + 1;
       hydrateSelected();
       bindDeleteButtons(row);
