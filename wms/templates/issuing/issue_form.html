@@ -119,7 +119,8 @@
             var row = input.closest('tr');
             if (row) {
               var unitInput = row.querySelector('.issue-unit');
-              if (unitInput) unitInput.value = opt.getAttribute('data-unit') || '';
+              var optUnit = opt.getAttribute('data-unit');
+              if (unitInput && optUnit) unitInput.value = optUnit;
             }
           }
         }
