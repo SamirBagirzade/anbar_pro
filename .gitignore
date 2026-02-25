@@ -45,3 +45,6 @@ htmlcov/
 
 # Compiled translations
 *.mo
+
+# Local deploy helpers
+scripts/deploy_remote.sh
