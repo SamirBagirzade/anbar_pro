@@ -17,9 +17,6 @@
         <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&vendor={{ selected_vendor_id }}&q={{ q|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=on_hand&direction={% if sort == 'on_hand' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "On Hand" %}{% if sort == "on_hand" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
       </th>
       <th>
-        <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&vendor={{ selected_vendor_id }}&q={{ q|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=min_stock&direction={% if sort == 'min_stock' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Min" %}{% if sort == "min_stock" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
-      </th>
-      <th>
         <a class="link-dark text-decoration-none" hx-get="?warehouse={{ selected_warehouse_id }}&vendor={{ selected_vendor_id }}&q={{ q|urlencode }}{% if low_stock %}&low_stock=1{% endif %}&sort=last_purchase_vendor&direction={% if sort == 'last_purchase_vendor' and direction == 'asc' %}desc{% else %}asc{% endif %}" hx-target="#stock-table" hx-push-url="true">{% trans "Last Purchase Vendor" %}{% if sort == "last_purchase_vendor" %} {% if direction == "asc" %}↑{% else %}↓{% endif %}{% endif %}</a>
       </th>
       <th>
@@ -41,7 +38,6 @@
         <td>{{ item.category }}</td>
         <td>{{ item.unit }}</td>
         <td class="{% if item.on_hand < item.min_stock %}text-danger{% endif %}">{{ item.on_hand }}</td>
-        <td>{{ item.min_stock }}</td>
         <td>
           {% if item.last_purchase_vendor_color %}
             <span class="me-2" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{{ item.last_purchase_vendor_color }};"></span>
