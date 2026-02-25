@@ -55,6 +55,7 @@
           <th><a href="?sort=movement_type&direction={% if sort == 'movement_type' and direction == 'desc' %}asc{% else %}desc{% endif %}">{% trans "Type" %}</a></th>
           <th><a href="?sort=warehouse__name&direction={% if sort == 'warehouse__name' and direction == 'desc' %}asc{% else %}desc{% endif %}">{% trans "Warehouse" %}</a></th>
           <th><a href="?sort=item__name&direction={% if sort == 'item__name' and direction == 'desc' %}asc{% else %}desc{% endif %}">{% trans "Item" %}</a></th>
+          <th>{% trans "Unit" %}</th>
           <th><a href="?sort=qty_delta&direction={% if sort == 'qty_delta' and direction == 'desc' %}asc{% else %}desc{% endif %}">{% trans "Qty" %}</a></th>
           <th>{% trans "Note" %}</th>
         </tr>
@@ -74,11 +75,12 @@
             </td>
             <td>{{ mv.warehouse.name }}</td>
             <td>{{ mv.item.name }}</td>
+            <td>{{ mv.item.unit }}</td>
             <td>{{ mv.qty_delta }}</td>
             <td>{{ mv.note }}</td>
           </tr>
         {% empty %}
-          <tr><td colspan="6">{% trans "No movements." %}</td></tr>
+          <tr><td colspan="7">{% trans "No movements." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>
