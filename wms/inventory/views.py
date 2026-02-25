@@ -42,7 +42,11 @@ def warehouse_stock(request):
 
     items = Item.objects.filter(is_active=True)
     if q:
-        items = items.filter(models.Q(name__icontains=q))
+        items = items.filter(
+            models.Q(name__icontains=q)
+            | models.Q(unit__icontains=q)
+            | models.Q(purchaseline__purchase__vendor__name__icontains=q)
+        ).distinct()
     if selected_vendor_id:
         items = items.filter(purchaseline__purchase__vendor_id=selected_vendor_id).distinct()
 
