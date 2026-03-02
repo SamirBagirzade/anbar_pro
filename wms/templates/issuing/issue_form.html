@@ -2,18 +2,6 @@
 {% load i18n %}
 {% block content %}
 <h4 class="mb-3">{% if title %}{{ title }}{% else %}{% trans "New Issue" %}{% endif %}</h4>
-{% if allow_load_purchase %}
-  <div class="card mb-3">
-    <div class="card-body">
-      <label class="form-label">{% trans "Load from Purchase #" %}</label>
-      <div class="input-group">
-        <input id="load-purchase-id" class="form-control" type="number" min="1" placeholder="69">
-        <button id="load-purchase-btn" class="btn btn-outline-secondary" type="button">{% trans "Load" %}</button>
-      </div>
-      <div id="load-purchase-feedback" class="form-text"></div>
-    </div>
-  </div>
-{% endif %}
 <form method="post" enctype="multipart/form-data" id="issue-form">
   {% csrf_token %}
   <div class="card mb-3">
@@ -176,103 +164,6 @@
       hydrateSelected();
       bindDeleteButtons(row);
     });
-
-    function addLineRow() {
-      var index = parseInt(totalForms.value, 10);
-      var html = template.replace(/__prefix__/g, index);
-      var temp = document.createElement('tbody');
-      temp.innerHTML = html.trim();
-      var row = temp.firstChild;
-      tbody.appendChild(row);
-      if (window.htmx) {
-        window.htmx.process(row);
-      }
-      totalForms.value = index + 1;
-      hydrateSelected();
-      bindDeleteButtons(row);
-      return row;
-    }
-
-    {% if allow_load_purchase %}
-    var loadBtn = document.getElementById('load-purchase-btn');
-    var loadInput = document.getElementById('load-purchase-id');
-    var loadFeedback = document.getElementById('load-purchase-feedback');
-
-    function setLoadFeedback(msg, isError) {
-      if (!loadFeedback) return;
-      loadFeedback.textContent = msg || '';
-      loadFeedback.classList.remove('text-danger', 'text-success');
-      if (msg) loadFeedback.classList.add(isError ? 'text-danger' : 'text-success');
-    }
-
-    if (loadBtn && loadInput) {
-      loadBtn.addEventListener('click', async function() {
-        var purchaseId = (loadInput.value || '').trim();
-        if (!purchaseId) {
-          setLoadFeedback('Purchase ID daxil edin.', true);
-          return;
-        }
-        setLoadFeedback('Yüklənir...', false);
-
-        try {
-          var resp = await fetch("{% url 'issue_lines_from_purchase' %}?purchase_id=" + encodeURIComponent(purchaseId));
-          var data = await resp.json();
-          if (!resp.ok) {
-            setLoadFeedback(data.error || 'Purchase tapılmadı.', true);
-            return;
-          }
-          var lines = data.lines || [];
-          if (!lines.length) {
-            setLoadFeedback('Bu purchase üçün sətir tapılmadı.', true);
-            return;
-          }
-
-          while (tbody.querySelectorAll('tr').length < lines.length) {
-            addLineRow();
-          }
-
-          var rows = Array.from(tbody.querySelectorAll('tr'));
-          rows.forEach(function(row, idx) {
-            var del = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
-            if (del) del.checked = false;
-            row.style.display = '';
-
-            var itemSearch = row.querySelector('.item-search');
-            var qtyInput = row.querySelector('input[name$="-qty"]');
-            var unitInput = row.querySelector('.issue-unit');
-            var select = itemSearch ? document.getElementById(itemSearch.getAttribute('data-select-id')) : null;
-
-            if (idx < lines.length) {
-              var line = lines[idx];
-              if (select) {
-                var opt = select.querySelector('option[value="' + line.item_id + '"]');
-                if (!opt) {
-                  opt = document.createElement('option');
-                  opt.value = line.item_id;
-                  opt.text = line.item_name;
-                  opt.setAttribute('data-unit', line.item_unit || '');
-                  select.appendChild(opt);
-                }
-                select.value = String(line.item_id);
-              }
-              if (itemSearch) itemSearch.value = line.item_name || '';
-              if (unitInput) unitInput.value = line.item_unit || '';
-              if (qtyInput) qtyInput.value = line.qty || '';
-            } else {
-              if (select) select.value = '';
-              if (itemSearch) itemSearch.value = '';
-              if (unitInput) unitInput.value = '';
-              if (qtyInput) qtyInput.value = '';
-            }
-          });
-
-          setLoadFeedback('Purchase #' + data.purchase_id + ' sətirləri yükləndi.', false);
-        } catch (e) {
-          setLoadFeedback('Yükləmə zamanı xəta baş verdi.', true);
-        }
-      });
-    }
-    {% endif %}
 
     var form = document.getElementById('issue-form');
     if (form) {

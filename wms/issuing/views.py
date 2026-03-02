@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum
 from django.db import transaction
@@ -25,27 +24,6 @@ def _save_issue_lines(issue, formset):
         if not item or qty is None:
             continue
         IssueLine.objects.create(header=issue, item=item, qty=qty)
-
-
-@login_required
-@permission_required("issuing.add_issueheader", raise_exception=True)
-def issue_lines_from_purchase(request):
-    purchase_id = (request.GET.get("purchase_id") or "").strip()
-    if not purchase_id.isdigit():
-        return JsonResponse({"error": "Invalid purchase id."}, status=400)
-
-    purchase = get_object_or_404(PurchaseHeader.objects.prefetch_related("lines__item"), pk=int(purchase_id))
-    lines = []
-    for line in purchase.lines.all():
-        lines.append(
-            {
-                "item_id": line.item_id,
-                "item_name": line.item.name,
-                "item_unit": line.item.unit,
-                "qty": str(line.qty),
-            }
-        )
-    return JsonResponse({"purchase_id": purchase.id, "lines": lines})
 
 
 @login_required
@@ -100,9 +78,22 @@ def issue_create(request):
             return redirect("warehouse_stock")
     else:
         from wms.masters.models import Warehouse
+        purchase_id = (request.GET.get("purchase") or "").strip()
+        purchase = None
+        if purchase_id.isdigit():
+            purchase = PurchaseHeader.objects.filter(pk=int(purchase_id)).prefetch_related("lines").first()
+
         first_wh = Warehouse.objects.filter(is_active=True).order_by("name").first()
-        header_form = IssueHeaderForm(initial={"warehouse": first_wh} if first_wh else None)
-        formset = IssueLineFormSet()
+        initial_header = {"warehouse": first_wh} if first_wh else {}
+        if purchase:
+            initial_header["warehouse"] = purchase.warehouse_id
+        header_form = IssueHeaderForm(initial=initial_header)
+
+        if purchase:
+            lines_initial = [{"item": line.item_id, "qty": line.qty} for line in purchase.lines.all()]
+            formset = IssueLineFormSet(initial=lines_initial if lines_initial else None)
+        else:
+            formset = IssueLineFormSet()
 
     return render(
         request,
@@ -112,7 +103,6 @@ def issue_create(request):
             "formset": formset,
             "title": _("New Issue"),
             "submit_label": _("Save & Post"),
-            "allow_load_purchase": True,
         },
     )
 
@@ -150,7 +140,6 @@ def issue_edit(request, issue_id: int):
             "formset": formset,
             "title": _("Edit Issue"),
             "submit_label": _("Save Changes"),
-            "allow_load_purchase": False,
         },
     )
 

@@ -65,7 +65,6 @@ urlpatterns = [
     path("purchasing/purchases/<int:purchase_id>/edit/", purchasing_views.purchase_edit, name="purchase_edit"),
     path("purchasing/purchases/<int:purchase_id>/", purchasing_views.purchase_detail, name="purchase_detail"),
     path("issuing/issues/", issuing_views.issue_list, name="issue_list"),
-    path("issuing/issues/load-from-purchase/", issuing_views.issue_lines_from_purchase, name="issue_lines_from_purchase"),
     path("issuing/issues/new/", issuing_views.issue_create, name="issue_create"),
     path("issuing/issues/<int:issue_id>/edit/", issuing_views.issue_edit, name="issue_edit"),
     path("issuing/issues/<int:issue_id>/", issuing_views.issue_detail, name="issue_detail"),
