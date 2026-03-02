@@ -56,6 +56,15 @@ class IssueLineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["item"].label_from_instance = lambda obj: obj.name
+        self.initial_item_unit = ""
+        if self.instance and self.instance.pk and self.instance.item_id:
+            self.initial_item_unit = self.instance.item.unit or ""
+        else:
+            initial_item_id = self.initial.get("item")
+            if initial_item_id:
+                self.initial_item_unit = (
+                    Item.objects.filter(pk=initial_item_id).values_list("unit", flat=True).first() or ""
+                )
 
 
 IssueLineFormSet = inlineformset_factory(
