@@ -4,7 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Sum
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
-from .forms import IssueHeaderForm, IssueLineFormSet, IssueEditLineFormSet
+from .forms import IssueHeaderForm, IssueLineFormSet, IssueEditLineFormSet, build_issue_create_formset
 from wms.inventory.services import post_issue, delete_issue_with_inventory, unpost_issue_inventory
 from wms.purchasing.models import PurchaseHeader
 from .models import IssueAttachment, IssueHeader, IssueLine
@@ -57,9 +57,10 @@ def issue_list(request):
 @permission_required("issuing.add_issueheader", raise_exception=True)
 @transaction.atomic
 def issue_create(request):
+    CreateFormSet = IssueLineFormSet
     if request.method == "POST":
         header_form = IssueHeaderForm(request.POST)
-        formset = IssueLineFormSet(request.POST)
+        formset = CreateFormSet(request.POST)
         if header_form.is_valid() and formset.is_valid():
             issue = header_form.save(commit=False)
             issue.created_by = request.user
@@ -91,9 +92,10 @@ def issue_create(request):
 
         if purchase:
             lines_initial = [{"item": line.item_id, "qty": line.qty} for line in purchase.lines.all()]
-            formset = IssueLineFormSet(initial=lines_initial if lines_initial else None)
+            CreateFormSet = build_issue_create_formset(extra=max(3, len(lines_initial)))
+            formset = CreateFormSet(initial=lines_initial if lines_initial else None)
         else:
-            formset = IssueLineFormSet()
+            formset = CreateFormSet()
 
     return render(
         request,

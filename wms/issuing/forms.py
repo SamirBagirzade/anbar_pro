@@ -76,6 +76,16 @@ IssueLineFormSet = inlineformset_factory(
 )
 
 
+def build_issue_create_formset(extra=3):
+    return inlineformset_factory(
+        IssueHeader,
+        IssueLine,
+        form=IssueLineForm,
+        extra=extra,
+        can_delete=True,
+    )
+
+
 IssueEditLineFormSet = inlineformset_factory(
     IssueHeader,
     IssueLine,
