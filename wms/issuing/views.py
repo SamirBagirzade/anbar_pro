@@ -58,12 +58,17 @@ def issue_list(request):
 @transaction.atomic
 def issue_create(request):
     CreateFormSet = IssueLineFormSet
+    source_purchase = None
     if request.method == "POST":
+        source_purchase_id = (request.POST.get("source_purchase_id") or "").strip()
+        if source_purchase_id.isdigit():
+            source_purchase = PurchaseHeader.objects.filter(pk=int(source_purchase_id)).first()
         header_form = IssueHeaderForm(request.POST)
         formset = CreateFormSet(request.POST)
         if header_form.is_valid() and formset.is_valid():
             issue = header_form.save(commit=False)
             issue.created_by = request.user
+            issue.source_purchase = source_purchase
             issue.save()
             formset.instance = issue
             _save_issue_lines(issue, formset)
@@ -80,18 +85,19 @@ def issue_create(request):
     else:
         from wms.masters.models import Warehouse
         purchase_id = (request.GET.get("purchase") or "").strip()
-        purchase = None
         if purchase_id.isdigit():
-            purchase = PurchaseHeader.objects.filter(pk=int(purchase_id)).prefetch_related("lines").first()
+            source_purchase = (
+                PurchaseHeader.objects.filter(pk=int(purchase_id)).prefetch_related("lines").first()
+            )
 
         first_wh = Warehouse.objects.filter(is_active=True).order_by("name").first()
         initial_header = {"warehouse": first_wh} if first_wh else {}
-        if purchase:
-            initial_header["warehouse"] = purchase.warehouse_id
+        if source_purchase:
+            initial_header["warehouse"] = source_purchase.warehouse_id
         header_form = IssueHeaderForm(initial=initial_header)
 
-        if purchase:
-            lines_initial = [{"item": line.item_id, "qty": line.qty} for line in purchase.lines.all()]
+        if source_purchase:
+            lines_initial = [{"item": line.item_id, "qty": line.qty} for line in source_purchase.lines.all()]
             CreateFormSet = build_issue_create_formset(extra=max(3, len(lines_initial)))
             formset = CreateFormSet(initial=lines_initial if lines_initial else None)
         else:
@@ -103,6 +109,7 @@ def issue_create(request):
         {
             "header_form": header_form,
             "formset": formset,
+            "source_purchase": source_purchase,
             "title": _("New Issue"),
             "submit_label": _("Save & Post"),
         },

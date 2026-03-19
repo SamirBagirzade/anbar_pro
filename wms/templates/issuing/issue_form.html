@@ -4,6 +4,9 @@
 <h4 class="mb-3">{% if title %}{{ title }}{% else %}{% trans "New Issue" %}{% endif %}</h4>
 <form method="post" enctype="multipart/form-data" id="issue-form">
   {% csrf_token %}
+  {% if source_purchase %}
+    <input type="hidden" name="source_purchase_id" value="{{ source_purchase.id }}">
+  {% endif %}
   <div class="card mb-3">
     <div class="card-body">
       {{ header_form.as_p }}

@@ -10,7 +10,7 @@ from datetime import datetime
 
 from wms.masters.models import Item, Warehouse, Vendor
 from wms.purchasing.models import PurchaseLine
-from wms.issuing.models import IssueLine
+from wms.issuing.models import IssueHeader, IssueLine
 from .models import StockBalance, StockMovement
 
 
@@ -227,6 +227,19 @@ def recent_movements(request):
     movements = movements.order_by(f"{prefix}{sort}")
     paginator = Paginator(movements, 50)
     page = paginator.get_page(request.GET.get("page"))
+
+    issue_ids = [mv.reference_id for mv in page.object_list if mv.reference_type == "issue" and mv.reference_id]
+    issue_map = {
+        issue.id: issue
+        for issue in IssueHeader.objects.filter(id__in=issue_ids).select_related("source_purchase")
+    }
+    for mv in page.object_list:
+        mv.source_purchase = None
+        if mv.reference_type != "issue" or not mv.reference_id:
+            continue
+        issue = issue_map.get(mv.reference_id)
+        if issue:
+            mv.source_purchase = issue.source_purchase
 
     params = request.GET.copy()
     params.pop("page", None)

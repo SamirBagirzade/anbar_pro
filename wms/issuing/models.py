@@ -1,11 +1,13 @@
 from django.db import models
 from django.conf import settings
 from wms.masters.models import Warehouse, OutgoingLocation, Item
+from wms.purchasing.models import PurchaseHeader
 
 
 class IssueHeader(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
     outgoing_location = models.ForeignKey(OutgoingLocation, on_delete=models.PROTECT)
+    source_purchase = models.ForeignKey(PurchaseHeader, on_delete=models.SET_NULL, blank=True, null=True)
     issue_date = models.DateField()
     notes = models.TextField(blank=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
