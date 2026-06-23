@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code (claude.ai/code) working in this repo.
 
 ## Commands
 
@@ -35,47 +35,47 @@ python manage.py makemessages -l az
 ./deploy.sh
 ```
 
-Runs inside the `.venv` virtualenv: pulls latest code, compiles translations, collects static files, then restarts the `anbar` systemd service.
+Runs inside `.venv` virtualenv: pulls latest code, compiles translations, collects static files, restarts `anbar` systemd service.
 
 ## Environment
 
-Configure via `.env` in the project root. Required vars: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_PORT`, `DJANGO_SECRET_KEY`. Defaults work for local dev with a `wms`/`wms` Postgres setup.
+Configure via `.env` in project root. Required vars: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_PORT`, `DJANGO_SECRET_KEY`. Defaults work for local dev with `wms`/`wms` Postgres setup.
 
-Precision constants are in `settings.py`: `QUANT_QTY = "0.001"` (3 dp), `QUANT_MONEY = "0.01"` (2 dp), `DEFAULT_CURRENCY = "AZN"`.
+Precision constants in `settings.py`: `QUANT_QTY = "0.001"` (3 dp), `QUANT_MONEY = "0.01"` (2 dp), `DEFAULT_CURRENCY = "AZN"`.
 
 ## Architecture
 
-This is a Django 5 warehouse management system (WMS) for Azerbaijan. UI is server-rendered templates with HTMX for partial updates. DRF provides a read/write REST API at `/api/`. The app is always forced to Azerbaijani locale via `ForceLocaleMiddleware`.
+Django 5 warehouse management system (WMS) for Azerbaijan. UI: server-rendered templates + HTMX for partial updates. DRF provides read/write REST API at `/api/`. App forced to Azerbaijani locale via `ForceLocaleMiddleware`.
 
 ### Apps
 
 - **`wms.masters`** — master data: Vendor, Warehouse, OutgoingLocation, Unit, Item, VendorItem, attachments. Items auto-assign `internal_code` (`ITEM-XXXXXX`) on first save.
-- **`wms.purchasing`** — purchase invoices (PurchaseHeader + PurchaseLine + attachments). Creating/editing a purchase immediately posts it to inventory.
-- **`wms.issuing`** — goods issues to outgoing locations (IssueHeader + IssueLine + attachments). Can be linked to a source purchase via `source_purchase` FK.
+- **`wms.purchasing`** — purchase invoices (PurchaseHeader + PurchaseLine + attachments). Creating/editing purchase immediately posts to inventory.
+- **`wms.issuing`** — goods issues to outgoing locations (IssueHeader + IssueLine + attachments). Links to source purchase via `source_purchase` FK.
 - **`wms.inventory`** — stock ledger: StockBalance (running total per warehouse+item), StockMovement (immutable audit log), TransferHeader/Line, AdjustmentHeader/Line.
-- **`wms.accounts`** — thin app, uses Django's built-in auth.
+- **`wms.accounts`** — thin app, uses Django built-in auth.
 
 ### Inventory posting pattern
 
-All stock mutations go through `wms/inventory/services.py`. The core function is `apply_movement()` which updates `StockBalance` and writes a `StockMovement` record inside a single `select_for_update` transaction. Higher-level functions (`post_purchase`, `post_issue`, `post_transfer`, `post_adjustment`) call `apply_movement` per line. Edit workflows call the matching `unpost_*` function first to reverse movements, then re-post.
+All stock mutations go through `wms/inventory/services.py`. Core function `apply_movement()` updates `StockBalance` and writes `StockMovement` inside single `select_for_update` transaction. Higher-level functions (`post_purchase`, `post_issue`, `post_transfer`, `post_adjustment`) call `apply_movement` per line. Edit workflows call matching `unpost_*` first to reverse, then re-post.
 
-Negative stock is blocked by default; superusers or users with the `inventory.override_negative_stock` permission can override it.
+Negative stock blocked by default; superusers or users with `inventory.override_negative_stock` permission can override.
 
-Deleting a posted document uses `delete_purchase_with_inventory` / `delete_issue_with_inventory` which reverses stock and, for purchases, deactivates items that are no longer referenced anywhere (orphan cleanup).
+Deleting posted document uses `delete_purchase_with_inventory` / `delete_issue_with_inventory` — reverses stock and, for purchases, deactivates items no longer referenced anywhere (orphan cleanup).
 
 ### Forms and formsets
 
-Purchase and issue create/edit views use Django inline formsets. Purchase lines allow free-text item entry (`item_name`) — the form resolves or creates the `Item` on save, with unit validation against the `Unit` master. The `IssueLineForm` uses a custom `ItemSelectWithUnit` widget that attaches `data-unit` to each `<option>` so the template can populate a read-only unit column.
+Purchase and issue create/edit views use Django inline formsets. Purchase lines allow free-text item entry (`item_name`) — form resolves or creates `Item` on save, with unit validation against `Unit` master. `IssueLineForm` uses custom `ItemSelectWithUnit` widget that attaches `data-unit` to each `<option>` so template can populate read-only unit column.
 
-`build_issue_create_formset(extra=N)` dynamically sizes the issue formset when pre-filling from a source purchase.
+`build_issue_create_formset(extra=N)` dynamically sizes issue formset when pre-filling from source purchase.
 
 ### Permissions
 
-All views require login and use `@permission_required` with Django model permissions. The REST API uses `DjangoModelPermissions`. Superusers bypass all permission checks including negative-stock override.
+All views require login, use `@permission_required` with Django model permissions. REST API uses `DjangoModelPermissions`. Superusers bypass all permission checks including negative-stock override.
 
 ### Templates
 
-Base template: `wms/templates/base.html`. App templates live in `wms/templates/<app>/`. Partial templates for HTMX responses are prefixed with `_` (e.g., `_stock_table.html`). The warehouse stock page responds with just the table partial when the request has `HX-Request`.
+Base template: `wms/templates/base.html`. App templates in `wms/templates/<app>/`. Partial templates for HTMX responses prefixed with `_` (e.g., `_stock_table.html`). Warehouse stock page returns table partial when request has `HX-Request`.
 
 ### REST API
 
