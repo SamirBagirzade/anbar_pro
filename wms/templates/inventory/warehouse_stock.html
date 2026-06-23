@@ -49,11 +49,11 @@
       </div>
       <div class="col-md-2">
         <label class="form-label">{% trans "Date From" %}</label>
-        <input class="form-control" type="text" name="date_from" value="{{ date_from }}" placeholder="dd/mm/yyyy" inputmode="numeric" />
+        <input class="form-control" type="date" name="date_from" value="{{ date_from }}" />
       </div>
       <div class="col-md-2">
         <label class="form-label">{% trans "Date To" %} <span class="text-muted small">({% trans "snapshot date" %})</span></label>
-        <input class="form-control" type="text" name="date_to" value="{{ date_to }}" placeholder="dd/mm/yyyy" inputmode="numeric" />
+        <input class="form-control" type="date" name="date_to" value="{{ date_to }}" />
       </div>
       <div class="col-md-8 d-flex align-items-end">
         <small class="text-muted">{% trans "Set 'Date To' to view historical stock levels. 'Date From' further limits to items active in the period." %}</small>
