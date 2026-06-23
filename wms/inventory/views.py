@@ -259,6 +259,12 @@ def item_detail(request, item_id: int):
             "stock_per_warehouse": stock_per_warehouse,
             "movements": movements,
             "purchases": purchases,
+            "warehouses": Warehouse.objects.filter(is_active=True).order_by("name"),
+            "movement_types": StockMovement.MOVEMENT_TYPES,
+            "warehouse_id": warehouse_id or "",
+            "movement_type": movement_type or "",
+            "date_from": date_from or "",
+            "date_to": date_to or "",
         },
     )
 
@@ -294,6 +300,35 @@ def recent_movements(request):
         movements = movements.filter(created_at__date__lte=date_to_parsed)
 
     movements = movements.order_by(f"{prefix}{sort}")
+
+    if request.GET.get("export") == "csv":
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = "attachment; filename=movements.csv"
+        writer = csv.writer(response)
+        writer.writerow(["date", "type", "warehouse", "item", "unit", "qty_delta", "unit_cost", "reference_type", "reference_id", "note"])
+        for mv in movements:
+            writer.writerow([mv.created_at.strftime("%Y-%m-%d %H:%M"), mv.get_movement_type_display(), mv.warehouse.name, mv.item.name, mv.item.unit, mv.qty_delta, mv.unit_cost, mv.reference_type, mv.reference_id, mv.note])
+        return response
+
+    if request.GET.get("export") == "xlsx":
+        import io
+        from openpyxl import Workbook
+        from openpyxl.styles import Font
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Movements"
+        ws.append(["Date", "Type", "Warehouse", "Item", "Unit", "Qty", "Unit Cost", "Ref Type", "Ref ID", "Note"])
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+        for mv in movements:
+            ws.append([mv.created_at.strftime("%Y-%m-%d %H:%M"), mv.get_movement_type_display(), mv.warehouse.name, mv.item.name, mv.item.unit, float(mv.qty_delta), float(mv.unit_cost) if mv.unit_cost else None, mv.reference_type, mv.reference_id, mv.note])
+        buf = io.BytesIO()
+        wb.save(buf)
+        buf.seek(0)
+        response = HttpResponse(buf.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = "attachment; filename=movements.xlsx"
+        return response
+
     paginator = Paginator(movements, 50)
     page = paginator.get_page(request.GET.get("page"))
 

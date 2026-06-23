@@ -6,7 +6,24 @@
     <h4 class="mb-1">{% trans "Recent Movements" %}</h4>
     <div class="text-muted">{% trans "All stock movements across items" %}</div>
   </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-sm btn-outline-secondary" id="export-csv-btn" href="#">{% trans "Export CSV" %}</a>
+    <a class="btn btn-sm btn-outline-success" id="export-xlsx-btn" href="#">{% trans "Export Excel" %}</a>
+  </div>
 </div>
+<script>
+  (function() {
+    function updateExportLinks() {
+      var params = new URLSearchParams(window.location.search);
+      params.delete('export'); params.delete('page');
+      var base = window.location.pathname + '?' + params.toString();
+      document.getElementById('export-csv-btn').href = base + '&export=csv';
+      document.getElementById('export-xlsx-btn').href = base + '&export=xlsx';
+    }
+    updateExportLinks();
+    document.body.addEventListener('htmx:afterSettle', updateExportLinks);
+  })();
+</script>
 <div class="card mb-3">
   <div class="card-body">
     <form class="row g-2">
