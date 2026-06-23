@@ -81,6 +81,9 @@ class PurchaseLineForm(forms.ModelForm):
         tax_multiplier = Decimal("1") + (tax_rate / Decimal("100"))
         line_total = quantize_money((qty * unit_price - discount) * tax_multiplier)
         cleaned["line_total"] = line_total
+        has_content = bool(item or item_name)
+        if has_content and qty <= 0:
+            self.add_error("qty", _("Quantity must be greater than 0."))
         if unit and not Unit.objects.filter(name__iexact=unit, is_active=True).exists():
             self.add_error("unit", _("Select a valid unit from the unit list."))
 

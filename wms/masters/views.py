@@ -15,8 +15,11 @@ from .forms import (
     VendorAttachmentForm,
 )
 from django.utils import timezone
+from pathlib import Path
 from wms.purchasing.models import PurchaseHeader, PurchaseLine, PurchaseAttachment
 from wms.inventory.services import post_purchase, quantize_money, quantize_qty
+
+_ALLOWED_ATTACHMENT_EXTS = {".pdf", ".jpg", ".jpeg", ".png", ".xlsx", ".xls", ".doc", ".docx"}
 
 
 def _extract_search_query(request):
@@ -48,6 +51,9 @@ def vendor_create(request):
         if form.is_valid():
             vendor = form.save()
             for f in request.FILES.getlist("attachments"):
+                if Path(f.name).suffix.lower() not in _ALLOWED_ATTACHMENT_EXTS:
+                    messages.warning(request, _("File type not allowed, skipped: %(name)s") % {"name": f.name})
+                    continue
                 VendorAttachment.objects.create(
                     vendor=vendor,
                     file=f,
@@ -81,6 +87,9 @@ def vendor_edit(request, vendor_id: int):
         if form.is_valid():
             form.save()
             for f in request.FILES.getlist("attachments"):
+                if Path(f.name).suffix.lower() not in _ALLOWED_ATTACHMENT_EXTS:
+                    messages.warning(request, _("File type not allowed, skipped: %(name)s") % {"name": f.name})
+                    continue
                 VendorAttachment.objects.create(
                     vendor=vendor,
                     file=f,
@@ -383,6 +392,9 @@ def item_create(request):
                 line_total=line_total,
             )
             for f in request.FILES.getlist("attachments"):
+                if Path(f.name).suffix.lower() not in _ALLOWED_ATTACHMENT_EXTS:
+                    messages.warning(request, _("File type not allowed, skipped: %(name)s") % {"name": f.name})
+                    continue
                 PurchaseAttachment.objects.create(
                     purchase=purchase,
                     file=f,

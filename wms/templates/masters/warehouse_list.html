@@ -12,7 +12,7 @@
   <tbody>
     {% for w in warehouses %}
       <tr>
-        <td>{{ w.name }}</td><td>{{ w.location }}</td><td>{{ w.is_active }}</td>
+        <td>{{ w.name }}</td><td>{{ w.location }}</td><td>{% if w.is_active %}<span class="badge bg-success">✓</span>{% else %}<span class="badge bg-secondary">✗</span>{% endif %}</td>
         <td>
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'warehouse_edit' w.id %}">{% trans "Edit" %}</a>
           <a class="btn btn-sm btn-outline-danger" href="{% url 'warehouse_delete' w.id %}">{% trans "Delete" %}</a>

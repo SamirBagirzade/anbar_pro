@@ -13,7 +13,7 @@
         {% for unit in units %}
           <tr>
             <td>{{ unit.name }}</td>
-            <td>{{ unit.is_active }}</td>
+            <td>{% if unit.is_active %}<span class="badge bg-success">✓</span>{% else %}<span class="badge bg-secondary">✗</span>{% endif %}</td>
             <td>
               <a class="btn btn-sm btn-outline-secondary" href="{% url 'unit_edit' unit.id %}">{% trans "Edit" %}</a>
               <a class="btn btn-sm btn-outline-danger" href="{% url 'unit_delete' unit.id %}">{% trans "Delete" %}</a>

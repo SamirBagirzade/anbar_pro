@@ -8,6 +8,45 @@
   {% endif %}
 </div>
 
+<div class="card mb-3">
+  <div class="card-body">
+    <form class="row g-2" method="get">
+      <div class="col-md-3">
+        <label class="form-label">{% trans "Warehouse" %}</label>
+        <select class="form-select form-select-sm" name="warehouse">
+          <option value="">{% trans "All" %}</option>
+          {% for w in warehouses %}
+            <option value="{{ w.id }}" {% if w.id|stringformat:"s" == selected_warehouse_id %}selected{% endif %}>{{ w.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">{% trans "Outgoing Location" %}</label>
+        <select class="form-select form-select-sm" name="outgoing_location">
+          <option value="">{% trans "All" %}</option>
+          {% for loc in outgoing_locations %}
+            <option value="{{ loc.id }}" {% if loc.id|stringformat:"s" == selected_location_id %}selected{% endif %}>{{ loc.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">{% trans "Date From" %}</label>
+        <input class="form-control form-control-sm" type="date" name="date_from" value="{{ date_from }}">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">{% trans "Date To" %}</label>
+        <input class="form-control form-control-sm" type="date" name="date_to" value="{{ date_to }}">
+      </div>
+      <div class="col-md-1 d-flex align-items-end">
+        <button class="btn btn-primary btn-sm w-100" type="submit">{% trans "Filter" %}</button>
+      </div>
+      <div class="col-md-1 d-flex align-items-end">
+        <a class="btn btn-outline-secondary btn-sm w-100" href="{% url 'issue_list' %}">{% trans "Clear" %}</a>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="card">
   <div class="card-body p-0">
     <table class="table table-dense mb-0">
@@ -39,10 +78,10 @@
                   <a class="btn btn-sm btn-outline-secondary" href="{% url 'issue_edit' issue.id %}">{% trans "Edit" %}</a>
                 {% endif %}
                 {% if can_delete_issue %}
-                  <form method="post" class="d-inline m-0" onsubmit="return confirm('Delete this outgoing issue?');">
+                  <form method="post" class="d-inline m-0">
                     {% csrf_token %}
                     <input type="hidden" name="issue_id" value="{{ issue.id }}">
-                    <button class="btn btn-sm btn-outline-danger" type="submit">{% trans "Delete" %}</button>
+                    <button class="btn btn-sm btn-outline-danger" type="submit" data-confirm="{% trans 'Delete this outgoing issue?' %}">{% trans "Delete" %}</button>
                   </form>
                 {% endif %}
               </td>

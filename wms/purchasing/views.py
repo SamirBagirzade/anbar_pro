@@ -5,6 +5,22 @@ from django.db.models import Count, Sum
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib import messages
+from datetime import datetime
+from pathlib import Path
+
+_ALLOWED_ATTACHMENT_EXTS = {".pdf", ".jpg", ".jpeg", ".png", ".xlsx", ".xls", ".doc", ".docx"}
+
+
+def _parse_date(value):
+    if not value:
+        return None
+    for fmt in ("%d/%m/%Y", "%d.%m.%Y", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except ValueError:
+            continue
+    return None
 from .forms import PurchaseHeaderForm, PurchaseLineFormSet, PurchaseEditLineFormSet
 from .models import PurchaseAttachment, PurchaseLine
 from wms.masters.models import Item
@@ -67,11 +83,26 @@ def purchase_list(request):
         delete_purchase_with_inventory(purchase)
         return redirect("purchase_list")
 
+    vendor_id = request.GET.get("vendor", "").strip()
+    date_from = request.GET.get("date_from", "").strip()
+    date_to = request.GET.get("date_to", "").strip()
+    date_from_parsed = _parse_date(date_from)
+    date_to_parsed = _parse_date(date_to)
+
     purchases = (
         PurchaseHeader.objects.select_related("vendor", "warehouse")
         .annotate(line_count=Count("lines", distinct=True), total_amount=Sum("lines__line_total"))
         .order_by("-invoice_date", "-id")
     )
+    if vendor_id:
+        purchases = purchases.filter(vendor_id=vendor_id)
+    if date_from_parsed:
+        purchases = purchases.filter(invoice_date__gte=date_from_parsed)
+    if date_to_parsed:
+        purchases = purchases.filter(invoice_date__lte=date_to_parsed)
+
+    from wms.masters.models import Vendor
+    vendors = Vendor.objects.filter(is_active=True).order_by("name")
     return render(
         request,
         "purchasing/purchase_list.html",
@@ -79,6 +110,10 @@ def purchase_list(request):
             "purchases": purchases,
             "can_delete_purchase": _can_delete_purchase(request.user),
             "can_change_purchase": request.user.has_perm("purchasing.change_purchaseheader"),
+            "vendors": vendors,
+            "selected_vendor_id": vendor_id,
+            "date_from": date_from,
+            "date_to": date_to,
         },
     )
 
@@ -100,6 +135,9 @@ def purchase_create(request):
             formset.instance = purchase
             _save_purchase_lines(purchase, formset)
             for f in request.FILES.getlist("attachments"):
+                if Path(f.name).suffix.lower() not in _ALLOWED_ATTACHMENT_EXTS:
+                    messages.warning(request, _("File type not allowed, skipped: %(name)s") % {"name": f.name})
+                    continue
                 PurchaseAttachment.objects.create(
                     purchase=purchase,
                     file=f,
@@ -177,6 +215,9 @@ def purchase_detail(request, purchase_id: int):
         action = request.POST.get("action")
         if action == "add_attachment":
             for f in request.FILES.getlist("attachments"):
+                if Path(f.name).suffix.lower() not in _ALLOWED_ATTACHMENT_EXTS:
+                    messages.warning(request, _("File type not allowed, skipped: %(name)s") % {"name": f.name})
+                    continue
                 PurchaseAttachment.objects.create(
                     purchase=purchase,
                     file=f,
@@ -190,12 +231,15 @@ def purchase_detail(request, purchase_id: int):
             attachment.delete()
         return redirect("purchase_detail", purchase_id=purchase.id)
 
+    lines = purchase.lines.select_related("item")
+    total = purchase.lines.aggregate(t=Sum("line_total"))["t"] or 0
     return render(
         request,
         "purchasing/purchase_detail.html",
         {
             "purchase": purchase,
-            "lines": purchase.lines.select_related("item"),
+            "lines": lines,
+            "total": total,
             "attachments": purchase.attachments.order_by("-uploaded_at"),
             "can_change_purchase": request.user.has_perm("purchasing.change_purchaseheader"),
         },

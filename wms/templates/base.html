@@ -65,6 +65,24 @@
         </main>
       </div>
     </div>
+
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{% trans "Confirm" %}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="confirmModalBody"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+            <button type="button" class="btn btn-danger" id="confirmModalOk">{% trans "Delete" %}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
   <script>
     (function() {
@@ -75,6 +93,23 @@
           allowInput: true,
           locale: window.flatpickr.l10ns.az || undefined,
         });
+      });
+    })();
+
+    (function() {
+      var pendingForm = null;
+      document.addEventListener('click', function(e) {
+        var btn = e.target.closest('[data-confirm]');
+        if (!btn) return;
+        e.preventDefault();
+        document.getElementById('confirmModalBody').textContent = btn.getAttribute('data-confirm');
+        pendingForm = btn.closest('form');
+        var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        document.getElementById('confirmModalOk').onclick = function() {
+          modal.hide();
+          if (pendingForm) pendingForm.submit();
+        };
+        modal.show();
       });
     })();
   </script>

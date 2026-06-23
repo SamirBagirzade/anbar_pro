@@ -19,7 +19,7 @@
       </div>
       {{ formset.management_form }}
       <table class="table table-dense mb-0">
-    <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Unit" %}</th><th>{% trans "Qty" %}</th><th>{% trans "Delete" %}</th></tr></thead>
+    <thead><tr><th>{% trans "Item" %}</th><th>{% trans "Unit" %}</th><th>{% trans "Available" %}</th><th>{% trans "Qty" %}</th><th>{% trans "Delete" %}</th></tr></thead>
     <tbody>
       {% for form in formset %}
         <tr>
@@ -43,7 +43,13 @@
           <td>
             <input type="text" class="form-control form-control-sm issue-unit" value="{{ form.initial_item_unit }}" readonly tabindex="-1">
           </td>
-          <td>{{ form.qty }}</td>
+          <td>
+            <input type="text" class="form-control form-control-sm issue-avail" value="{{ form.initial_item_on_hand }}" readonly tabindex="-1">
+          </td>
+          <td>
+            {{ form.qty }}
+            {% if form.qty.errors %}<div class="text-danger small">{{ form.qty.errors }}</div>{% endif %}
+          </td>
           <td class="text-center">
             <button type="button" class="btn btn-sm btn-outline-danger row-delete-btn">{% trans "Delete" %}</button>
           </td>
@@ -84,6 +90,9 @@
     <td>
       <input type="text" class="form-control form-control-sm issue-unit" readonly tabindex="-1">
     </td>
+    <td>
+      <input type="text" class="form-control form-control-sm issue-avail" readonly tabindex="-1">
+    </td>
     <td>{{ formset.empty_form.qty }}</td>
     <td class="text-center">
       <button type="button" class="btn btn-sm btn-outline-danger row-delete-btn">{% trans "Delete" %}</button>
@@ -106,6 +115,12 @@
       if (row) {
         var unitInput = row.querySelector('.issue-unit');
         if (unitInput) unitInput.value = itemUnit || '';
+        var availInput = row.querySelector('.issue-avail');
+        if (availInput && select) {
+          var selectedOpt = select.options[select.selectedIndex];
+          var onHand = selectedOpt ? selectedOpt.getAttribute('data-on-hand') : null;
+          availInput.value = (onHand !== null && onHand !== undefined) ? onHand : '';
+        }
       }
       var results = container.querySelector('[id^="item-results-"]');
       if (results) results.innerHTML = '';
@@ -124,6 +139,9 @@
               var unitInput = row.querySelector('.issue-unit');
               var optUnit = opt.getAttribute('data-unit');
               if (unitInput && optUnit) unitInput.value = optUnit;
+              var availInput = row.querySelector('.issue-avail');
+              var optAvail = opt.getAttribute('data-on-hand');
+              if (availInput && optAvail !== null) availInput.value = optAvail || '';
             }
           }
         }

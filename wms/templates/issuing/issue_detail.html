@@ -27,6 +27,9 @@
           <tr><td colspan="3">{% trans "No lines." %}</td></tr>
         {% endfor %}
       </tbody>
+      <tfoot>
+        <tr class="table-light fw-bold"><td colspan="2" class="text-end">{% trans "Total Qty" %}</td><td>{{ total_qty }}</td></tr>
+      </tfoot>
     </table>
   </div>
 </div>

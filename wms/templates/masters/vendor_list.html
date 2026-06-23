@@ -16,7 +16,7 @@
           <span class="me-2" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{{ v.color_hex }};"></span>
           {{ v.name }}
         </td>
-        <td>{{ v.contact_person }}</td><td>{{ v.phone }}</td><td>{{ v.email }}</td><td>{{ v.is_active }}</td>
+        <td>{{ v.contact_person }}</td><td>{{ v.phone }}</td><td>{{ v.email }}</td><td>{% if v.is_active %}<span class="badge bg-success">✓</span>{% else %}<span class="badge bg-secondary">✗</span>{% endif %}</td>
         <td>
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'vendor_edit' v.id %}">{% trans "Edit" %}</a>
           <a class="btn btn-sm btn-outline-danger" href="{% url 'vendor_delete' v.id %}">{% trans "Delete" %}</a>

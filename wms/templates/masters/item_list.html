@@ -12,7 +12,7 @@
   <tbody>
     {% for i in items %}
       <tr>
-        <td>{{ i.name }}</td><td>{{ i.category }}</td><td>{{ i.unit }}</td><td>{{ i.min_stock }}</td><td>{{ i.is_active }}</td>
+        <td>{{ i.name }}</td><td>{{ i.category }}</td><td>{{ i.unit }}</td><td>{{ i.min_stock }}</td><td>{% if i.is_active %}<span class="badge bg-success">✓</span>{% else %}<span class="badge bg-secondary">✗</span>{% endif %}</td>
         <td>
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'item_edit' i.id %}">{% trans "Edit" %}</a>
           <a class="btn btn-sm btn-outline-danger" href="{% url 'item_delete' i.id %}">{% trans "Delete" %}</a>
