@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import models
-from django.db.models import OuterRef, Subquery, Value, DecimalField, DateField
+from django.db.models import OuterRef, Subquery, Value, DecimalField, DateField, Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -39,6 +39,10 @@ def warehouse_stock(request):
     low_stock = request.GET.get("low_stock", "") == "1"
     sort = request.GET.get("sort", "last_purchase_date")
     direction = request.GET.get("direction", "desc")
+    date_from = request.GET.get("date_from", "").strip()
+    date_to = request.GET.get("date_to", "").strip()
+    date_from_parsed = _parse_date(date_from)
+    date_to_parsed = _parse_date(date_to)
 
     items = Item.objects.filter(is_active=True)
     if q:
@@ -50,7 +54,32 @@ def warehouse_stock(request):
     if selected_vendor_id:
         items = items.filter(purchaseline__purchase__vendor_id=selected_vendor_id).distinct()
 
-    if selected_warehouse_id:
+    if selected_warehouse_id and date_to_parsed:
+        # Historical view: sum all movements up to date_to
+        hist_sub = (
+            StockMovement.objects.filter(
+                warehouse_id=selected_warehouse_id,
+                item_id=OuterRef("pk"),
+                created_at__date__lte=date_to_parsed,
+            )
+            .values("item_id")
+            .annotate(total=Sum("qty_delta"))
+            .values("total")
+        )
+        items = items.annotate(
+            on_hand=Coalesce(
+                Subquery(hist_sub, output_field=DecimalField(max_digits=14, decimal_places=3)),
+                Value("0.000", output_field=DecimalField(max_digits=14, decimal_places=3)),
+            )
+        )
+        # If date_from also given, restrict to items with movement activity in the period
+        if date_from_parsed:
+            items = items.filter(
+                stockmovement__warehouse_id=selected_warehouse_id,
+                stockmovement__created_at__date__gte=date_from_parsed,
+                stockmovement__created_at__date__lte=date_to_parsed,
+            ).distinct()
+    elif selected_warehouse_id:
         stock_sub = StockBalance.objects.filter(
             warehouse_id=selected_warehouse_id, item_id=OuterRef("pk")
         ).values("on_hand")[:1]
@@ -123,6 +152,43 @@ def warehouse_stock(request):
             ])
         return response
 
+    if request.GET.get("export") == "xlsx":
+        import io
+        from openpyxl import Workbook
+        from openpyxl.styles import Font
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Warehouse Stock"
+        ws.append([
+            "Məhsul", "Kateqoriya", "Ölçü vahidi", "Anbarda",
+            "Min Stok", "Son Alış Təchizatçısı", "Son Alış Qiyməti",
+            "Son Alış Tarixi", "Son Verilmə Tarixi",
+        ])
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+        for item in items:
+            ws.append([
+                item.name,
+                item.category,
+                item.unit,
+                float(item.on_hand),
+                float(item.min_stock),
+                item.last_purchase_vendor or "",
+                float(item.last_purchase_unit_price) if item.last_purchase_unit_price else "",
+                item.last_purchase_date,
+                item.last_issue_date,
+            ])
+        buf = io.BytesIO()
+        wb.save(buf)
+        buf.seek(0)
+        response = HttpResponse(
+            buf.read(),
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        response["Content-Disposition"] = "attachment; filename=warehouse_stock.xlsx"
+        return response
+
     paginator = Paginator(items, 25)
     page = paginator.get_page(request.GET.get("page"))
     params = request.GET.copy()
@@ -144,6 +210,9 @@ def warehouse_stock(request):
         "sort": sort,
         "direction": direction,
         "base_query": base_query,
+        "date_from": date_from,
+        "date_to": date_to,
+        "is_historical": bool(date_to_parsed),
     }
 
     if request.headers.get("HX-Request"):

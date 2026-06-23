@@ -4,11 +4,12 @@
 {% block content %}
 <div class="d-flex align-items-center justify-content-between mb-3">
   <div>
-    <h4 class="mb-1">{% trans "Warehouse Stock" %}</h4>
+    <h4 class="mb-1">{% trans "Warehouse Stock" %}{% if is_historical %} <span class="badge bg-warning text-dark">{% trans "Historical" %}: {{ date_to }}</span>{% endif %}</h4>
     <div class="text-muted">{% trans "At-a-glance availability by warehouse" %}</div>
   </div>
-  <div>
-    <a class="btn btn-sm btn-outline-secondary" href="?{% if selected_warehouse_id %}warehouse={{ selected_warehouse_id }}&{% endif %}{% if selected_vendor_id %}vendor={{ selected_vendor_id }}&{% endif %}q={{ q }}&low_stock={{ low_stock|yesno:'1,0' }}&sort={{ sort }}&direction={{ direction }}&export=csv">{% trans "Export CSV" %}</a>
+  <div class="d-flex gap-2">
+    <a class="btn btn-sm btn-outline-secondary" href="?{% if selected_warehouse_id %}warehouse={{ selected_warehouse_id }}&{% endif %}{% if selected_vendor_id %}vendor={{ selected_vendor_id }}&{% endif %}q={{ q }}&low_stock={{ low_stock|yesno:'1,0' }}&sort={{ sort }}&direction={{ direction }}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}&export=csv">{% trans "Export CSV" %}</a>
+    <a class="btn btn-sm btn-outline-success" href="?{% if selected_warehouse_id %}warehouse={{ selected_warehouse_id }}&{% endif %}{% if selected_vendor_id %}vendor={{ selected_vendor_id }}&{% endif %}q={{ q }}&low_stock={{ low_stock|yesno:'1,0' }}&sort={{ sort }}&direction={{ direction }}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}&export=xlsx">{% trans "Export Excel" %}</a>
   </div>
 </div>
 <div class="card mb-3">
@@ -45,6 +46,17 @@
       <input type="hidden" name="direction" value="{{ direction }}">
       <div class="col-md-2 d-flex align-items-end">
         <button class="btn btn-primary w-100" type="submit">{% trans "Filter" %}</button>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">{% trans "Date From" %}</label>
+        <input class="form-control" type="text" name="date_from" value="{{ date_from }}" placeholder="dd/mm/yyyy" inputmode="numeric" />
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">{% trans "Date To" %} <span class="text-muted small">({% trans "snapshot date" %})</span></label>
+        <input class="form-control" type="text" name="date_to" value="{{ date_to }}" placeholder="dd/mm/yyyy" inputmode="numeric" />
+      </div>
+      <div class="col-md-8 d-flex align-items-end">
+        <small class="text-muted">{% trans "Set 'Date To' to view historical stock levels. 'Date From' further limits to items active in the period." %}</small>
       </div>
     </form>
   </div>
