@@ -29,6 +29,14 @@ python manage.py compilemessages
 python manage.py makemessages -l az
 ```
 
+## Deployment
+
+```bash
+./deploy.sh
+```
+
+Runs inside the `.venv` virtualenv: pulls latest code, compiles translations, collects static files, then restarts the `anbar` systemd service.
+
 ## Environment
 
 Configure via `.env` in the project root. Required vars: `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_PORT`, `DJANGO_SECRET_KEY`. Defaults work for local dev with a `wms`/`wms` Postgres setup.
