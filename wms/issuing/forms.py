@@ -20,13 +20,6 @@ class ItemSelectWithUnit(forms.Select):
                 option["attrs"]["data-unit"] = item_unit
         return option
 
-    def use_required_attribute(self, initial):
-        # This select is visually hidden (paired with a visible search box that
-        # writes into it via JS). A hidden field with the HTML `required`
-        # attribute makes browsers silently block form submission with no
-        # visible error. Server-side validation still enforces required=True.
-        return False
-
 
 class IssueHeaderForm(forms.ModelForm):
     issue_date = forms.DateField(
@@ -55,6 +48,8 @@ class IssueHeaderForm(forms.ModelForm):
 
 
 class IssueLineForm(forms.ModelForm):
+    item_name = forms.CharField(required=False, label=_("Item"))
+
     class Meta:
         model = IssueLine
         fields = ["item", "qty"]
@@ -63,14 +58,14 @@ class IssueLineForm(forms.ModelForm):
 
     def __init__(self, *args, warehouse_id=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["item"].required = False
         self.fields["item"].widget = ItemSelectWithUnit()
         self.fields["item"].label_from_instance = lambda obj: obj.name
 
         self.initial_item_unit = ""
-        self.initial_item_name = ""
         if self.instance and self.instance.pk and self.instance.item_id:
             self.initial_item_unit = self.instance.item.unit or ""
-            self.initial_item_name = self.instance.item.name
+            self.initial["item_name"] = self.instance.item.name
         else:
             initial_item_id = self.initial.get("item")
             if initial_item_id:
@@ -79,14 +74,26 @@ class IssueLineForm(forms.ModelForm):
                     item = Item.objects.filter(pk=item_id).only("unit", "name").first()
                     if item:
                         self.initial_item_unit = item.unit or ""
-                        self.initial_item_name = item.name
+                        self.initial["item_name"] = item.name
                 except (TypeError, ValueError):
                     pass
 
     def clean(self):
         cleaned = super().clean()
         item = cleaned.get("item")
+        item_name = (cleaned.get("item_name") or "").strip()
         qty = cleaned.get("qty")
+
+        if not item and item_name:
+            item = Item.objects.filter(name__iexact=item_name).first()
+            if item:
+                cleaned["item"] = item
+            else:
+                self.add_error("item_name", _("No item found with that name. Pick one from the list."))
+
+        if not item and not item_name and qty is not None:
+            self.add_error("item", _("Item is required."))
+
         if item and qty is not None and qty <= 0:
             self.add_error("qty", _("Quantity must be greater than 0."))
         return cleaned

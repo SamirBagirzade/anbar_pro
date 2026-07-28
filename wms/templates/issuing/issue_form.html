@@ -30,11 +30,13 @@
             <div class="position-relative">
               <input type="text" class="form-control form-control-sm item-search" placeholder="{% trans 'Search item' %}"
                      hx-get="{% url 'item_search' %}" hx-trigger="keyup changed delay:300ms"
-                     hx-target="#item-results-{{ forloop.counter0 }}" name="q" autocomplete="off"
-                     value="{{ form.initial_item_name }}"
-                     data-select-id="{{ form.item.id_for_label }}">
+                     hx-target="#item-results-{{ forloop.counter0 }}" name="{{ form.item_name.html_name }}"
+                     id="{{ form.item_name.id_for_label }}" value="{{ form.item_name.value|default_if_none:'' }}"
+                     autocomplete="off" data-select-id="{{ form.item.id_for_label }}">
               <div id="item-results-{{ forloop.counter0 }}" class="position-absolute w-100" style="z-index: 10;"></div>
             </div>
+            {% if form.item.errors %}<div class="text-danger small">{{ form.item.errors }}</div>{% endif %}
+            {% if form.item_name.errors %}<div class="text-danger small">{{ form.item_name.errors }}</div>{% endif %}
             <div class="d-none">
               {{ form.id }}
               {{ form.item }}
@@ -75,7 +77,8 @@
       <div class="position-relative">
         <input type="text" class="form-control form-control-sm item-search" placeholder="{% trans 'Search item' %}"
                hx-get="{% url 'item_search' %}" hx-trigger="keyup changed delay:300ms"
-               hx-target="#item-results-__prefix__" name="q" autocomplete="off"
+               hx-target="#item-results-__prefix__" name="{{ formset.empty_form.item_name.html_name }}"
+               id="{{ formset.empty_form.item_name.id_for_label }}" autocomplete="off"
                data-select-id="id_{{ formset.prefix }}-__prefix__-item">
         <div id="item-results-__prefix__" class="position-absolute w-100" style="z-index: 10;"></div>
       </div>
