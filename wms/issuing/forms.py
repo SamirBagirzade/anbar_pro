@@ -76,8 +76,10 @@ class IssueLineForm(forms.ModelForm):
 
         self.initial_item_unit = ""
         self.initial_item_on_hand = ""
+        self.initial_item_name = ""
         if self.instance and self.instance.pk and self.instance.item_id:
             self.initial_item_unit = self.instance.item.unit or ""
+            self.initial_item_name = self.instance.item.name
             if self.instance.item_id in stock_map:
                 self.initial_item_on_hand = str(stock_map[self.instance.item_id])
         else:
@@ -85,9 +87,10 @@ class IssueLineForm(forms.ModelForm):
             if initial_item_id:
                 try:
                     item_id = int(initial_item_id)
-                    self.initial_item_unit = (
-                        Item.objects.filter(pk=item_id).values_list("unit", flat=True).first() or ""
-                    )
+                    item = Item.objects.filter(pk=item_id).only("unit", "name").first()
+                    if item:
+                        self.initial_item_unit = item.unit or ""
+                        self.initial_item_name = item.name
                     if item_id in stock_map:
                         self.initial_item_on_hand = str(stock_map[item_id])
                 except (TypeError, ValueError):
