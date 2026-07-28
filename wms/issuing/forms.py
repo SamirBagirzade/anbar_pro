@@ -6,10 +6,6 @@ from wms.masters.models import Item
 
 
 class ItemSelectWithUnit(forms.Select):
-    def __init__(self, *args, stock_map=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.stock_map = stock_map or {}
-
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
         raw_value = option.get("value")
@@ -22,11 +18,14 @@ class ItemSelectWithUnit(forms.Select):
             if item_unit:
                 option.setdefault("attrs", {})
                 option["attrs"]["data-unit"] = item_unit
-            on_hand = self.stock_map.get(item_id)
-            if on_hand is not None:
-                option.setdefault("attrs", {})
-                option["attrs"]["data-on-hand"] = str(on_hand)
         return option
+
+    def use_required_attribute(self, initial):
+        # This select is visually hidden (paired with a visible search box that
+        # writes into it via JS). A hidden field with the HTML `required`
+        # attribute makes browsers silently block form submission with no
+        # visible error. Server-side validation still enforces required=True.
+        return False
 
 
 class IssueHeaderForm(forms.ModelForm):
@@ -64,24 +63,14 @@ class IssueLineForm(forms.ModelForm):
 
     def __init__(self, *args, warehouse_id=None, **kwargs):
         super().__init__(*args, **kwargs)
-        stock_map = {}
-        if warehouse_id:
-            from wms.inventory.models import StockBalance
-            stock_map = dict(
-                StockBalance.objects.filter(warehouse_id=warehouse_id)
-                .values_list("item_id", "on_hand")
-            )
-        self.fields["item"].widget = ItemSelectWithUnit(stock_map=stock_map)
+        self.fields["item"].widget = ItemSelectWithUnit()
         self.fields["item"].label_from_instance = lambda obj: obj.name
 
         self.initial_item_unit = ""
-        self.initial_item_on_hand = ""
         self.initial_item_name = ""
         if self.instance and self.instance.pk and self.instance.item_id:
             self.initial_item_unit = self.instance.item.unit or ""
             self.initial_item_name = self.instance.item.name
-            if self.instance.item_id in stock_map:
-                self.initial_item_on_hand = str(stock_map[self.instance.item_id])
         else:
             initial_item_id = self.initial.get("item")
             if initial_item_id:
@@ -91,8 +80,6 @@ class IssueLineForm(forms.ModelForm):
                     if item:
                         self.initial_item_unit = item.unit or ""
                         self.initial_item_name = item.name
-                    if item_id in stock_map:
-                        self.initial_item_on_hand = str(stock_map[item_id])
                 except (TypeError, ValueError):
                     pass
 
